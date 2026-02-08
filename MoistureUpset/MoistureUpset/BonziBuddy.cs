@@ -2125,7 +2125,6 @@ namespace MoistureUpset
                 if (!!LocalUserManager.readOnlyLocalUsersList[0].userProfile.HasUnlockable("MOISTURE_BONZIBUDDY_UNLOCKABLE_NAME"))//achievement not unlocked
                 {
                     On.RoR2.Run.FixedUpdate += Run_FixedUpdate;
-                    On.RoR2.HoldoutZoneController.FixedUpdate += HoldoutZoneController_FixedUpdate;
                     Chat.AddMessage($"<style=cWorldEvent>You hear a rumbling coming from the teleporter...</style>");
                     foreach (var item in Camera.allCameras)
                     {
@@ -2233,7 +2232,6 @@ namespace MoistureUpset
                     }
                     if (newS.name != "moon2")
                     {
-                        On.RoR2.HoldoutZoneController.FixedUpdate -= HoldoutZoneController_FixedUpdate;
                         On.RoR2.Run.FixedUpdate -= Run_FixedUpdate;
                     }
                     charPosition = null;
@@ -3081,23 +3079,26 @@ namespace MoistureUpset
                 return;
             }
             GameObject gameObject = UnityEngine.Object.Instantiate<GameObject>(Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Command/CommandCube.prefab").WaitForCompletion(), createPickupInfo.position, createPickupInfo.rotation);
-            gameObject.GetComponent<PickupIndexNetworker>().NetworkpickupIndex = pickupIndex;
+            var pickupIndexNetworker = gameObject.GetComponent<PickupIndexNetworker>();
+            if (pickupIndexNetworker)
+            {
+                var networkerType = pickupIndexNetworker.GetType();
+                var pickupIndexProperty = networkerType.GetProperty("NetworkpickupIndex")
+                    ?? networkerType.GetProperty("NetworkPickupIndex");
+                if (pickupIndexProperty != null)
+                {
+                    pickupIndexProperty.SetValue(pickupIndexNetworker, pickupIndex);
+                }
+                else
+                {
+                    var pickupIndexField = networkerType.GetField("pickupIndex", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+                        ?? networkerType.GetField("networkpickupIndex", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+                    pickupIndexField?.SetValue(pickupIndexNetworker, pickupIndex);
+                }
+            }
             gameObject.GetComponent<PickupPickerController>().SetOptionsFromPickupForCommandArtifact(pickupIndex);
             NetworkServer.Spawn(gameObject);
             shouldSpawn = false;
-        }
-        private void HoldoutZoneController_FixedUpdate(On.RoR2.HoldoutZoneController.orig_FixedUpdate orig, HoldoutZoneController self)
-        {
-            float num = Time.fixedDeltaTime * dist;
-            if (NetworkServer.active)
-            {
-                Time.fixedDeltaTime -= num;
-            }
-            orig(self);
-            if (NetworkServer.active)
-            {
-                Time.fixedDeltaTime += num;
-            }
         }
         private void Run_FixedUpdate(On.RoR2.Run.orig_FixedUpdate orig, Run self)
         {
