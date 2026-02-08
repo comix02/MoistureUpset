@@ -228,11 +228,18 @@ namespace MoistureUpset
                 progress = 0;
                 bossOver = false;
             };
-            On.RoR2.UI.ObjectivePanelController.FinishTeleporterObjectiveTracker.ctor += (orig, self) =>
+            try
             {
-                orig(self);
-                AkSoundEngine.SetRTPCValue("BeforeBoss", 0);
-            };
+                On.RoR2.UI.ObjectivePanelController.FinishTeleporterObjectiveTracker.ctor += (orig, self) =>
+                {
+                    orig(self);
+                    AkSoundEngine.SetRTPCValue("BeforeBoss", 0);
+                };
+            }
+            catch (Exception e)
+            {
+                DebugClass.Log($"Skipping MLG FinishTeleporterObjectiveTracker hook: {e.GetType().Name}: {e.Message}");
+            }
             On.RoR2.CharacterBody.GetSubtitle += (orig, self) =>
             {
                 if (self.baseNameToken == "ARTIFACTSHELL_BODY_NAME" || self.baseNameToken == "TITANGOLD_BODY_NAME" || self.baseNameToken == "SUPERROBOBALLBOSS_BODY_NAME" || self.baseNameToken == "BROTHER_BODY_NAME" || self.baseNameToken == "LUNARGOLEM_BODY_NAME" || self.baseNameToken == "LUNARWISP_BODY_NAME" || self.baseNameToken == "COMMANDO_BODY_NAME" || self.baseNameToken == "MERC_BODY_NAME" || self.baseNameToken == "ENGI_BODY_NAME" || self.baseNameToken == "HUNTRESS_BODY_NAME" || self.baseNameToken == "MAGE_BODY_NAME" || self.baseNameToken == "TOOLBOT_BODY_NAME" || self.baseNameToken == "TREEBOT_BODY_NAME" || self.baseNameToken == "LOADER_BODY_NAME" || self.baseNameToken == "CROCO_BODY_NAME" || self.baseNameToken == "CAPTAIN_BODY_NAME")

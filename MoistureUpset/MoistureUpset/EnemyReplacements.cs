@@ -26,57 +26,102 @@ namespace MoistureUpset
     {
         public static void ReplaceModel(string prefab, string mesh, string png, int position = 0, bool replaceothers = false)
         {
-            var fab = Addressables.LoadAssetAsync<GameObject>(prefab).WaitForCompletion();
-            var meshes = fab.GetComponentsInChildren<SkinnedMeshRenderer>();
-            meshes[position].sharedMesh = Assets.Load<Mesh>(mesh);
-            var texture = Assets.Load<Texture>(png);
-            var blank = Assets.Load<Texture>("@MoistureUpset_na:assets/blank.png");
-            for (int i = 0; i < meshes[position].sharedMaterials.Length; i++)
-            {
-                //Debug.Log($"-=============={meshes[position].sharedMaterials[i].shader.name}");
-                //meshes[position].sharedMaterials[i].shader = Shader.Find("Hopoo Games/Deferred/Standard");
-                if (prefab == "RoR2/Base/Titan/TitanGoldBody.prefab")
+                var fab = AddressableLoader.LoadAsset<GameObject>(prefab, "EnemyReplacements.ReplaceModel(string)");
+                if (!fab)
                 {
-                    //meshes[position].sharedMaterials[i].shader = LegacyShaderAPI.Find("Hopoo Games/Deferred/Standard");
-                    meshes[position].sharedMaterials[i].shader = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Commando/CommandoBody.prefab").WaitForCompletion().GetComponentInChildren<SkinnedMeshRenderer>().material.shader;
+                    return;
                 }
-                else if (prefab == "RoR2/Base/Shopkeeper/ShopkeeperBody.prefab")
+
+                var meshes = fab.GetComponentsInChildren<SkinnedMeshRenderer>();
+                if (meshes == null || meshes.Length == 0)
                 {
-                    //meshes[position].sharedMaterials[i] = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Commando/CommandoBody.prefab").WaitForCompletion().GetComponentInChildren<SkinnedMeshRenderer>().material;
-                    meshes[position].sharedMaterials[i] = Assets.LoadMaterial(png);
+                    DebugClass.Log($"ReplaceModel skipped for '{prefab}': no skinned meshes found.");
+                    return;
                 }
-                meshes[position].sharedMaterials[i].color = Color.white;
-                meshes[position].sharedMaterials[i].mainTexture = texture;
-                meshes[position].sharedMaterials[i].SetTexture("_EmTex", blank);
-                meshes[position].sharedMaterials[i].SetTexture("_NormalTex", null);
-                if (png.Contains("frog"))
+                if (position < 0 || position >= meshes.Length || !meshes[position])
                 {
-                    meshes[position].sharedMaterials[i].SetTexture("_FresnelRamp", null);
+                    DebugClass.Log($"ReplaceModel skipped for '{prefab}': invalid skinned mesh index {position} (count={meshes.Length}).");
+                    return;
                 }
-                if (png.Contains("shop"))
+
+                var targetMesh = Assets.Load<Mesh>(mesh);
+                if (!targetMesh)
                 {
-                    meshes[position].sharedMaterials[i].SetTexture("_FlowHeightRamp", null);
-                    meshes[position].sharedMaterials[i].SetTexture("_FlowHeightmap", null);
+                    DebugClass.Log($"ReplaceModel skipped for '{prefab}': mesh '{mesh}' could not be loaded.");
+                    return;
                 }
-                if (png.Contains("dankengine"))
+                meshes[position].sharedMesh = targetMesh;
+
+                var texture = Assets.Load<Texture>(png);
+                var blank = Assets.Load<Texture>("@MoistureUpset_na:assets/blank.png");
+                for (int i = 0; i < meshes[position].sharedMaterials.Length; i++)
                 {
-                    meshes[1].sharedMaterials[0].SetTexture("_MainTex", texture);
-                    meshes[position].sharedMaterials[i].SetTexture("_FresnelRamp", null);
-                    meshes[position].sharedMaterials[i].SetTexture("_FlowHeightRamp", null);
-                    meshes[position].sharedMaterials[i].SetTexture("_FlowHeightmap", null);
-                }
-            }
-            if (replaceothers)
-            {
-                for (int i = 0; i < meshes.Length; i++)
-                {
-                    if (i != position)
+                    var material = meshes[position].sharedMaterials[i];
+                    if (!material)
                     {
-                        meshes[i].sharedMesh = Assets.Load<Mesh>(mesh);
+                        continue;
+                    }
+
+                    //Debug.Log($"-=============={meshes[position].sharedMaterials[i].shader.name}");
+                    //meshes[position].sharedMaterials[i].shader = Shader.Find("Hopoo Games/Deferred/Standard");
+                    if (prefab == "RoR2/Base/Titan/TitanGoldBody.prefab")
+                    {
+                        //meshes[position].sharedMaterials[i].shader = LegacyShaderAPI.Find("Hopoo Games/Deferred/Standard");
+                        var commandoBody = AddressableLoader.LoadAsset<GameObject>("RoR2/Base/Commando/CommandoBody.prefab", "EnemyReplacements.ReplaceModel(Titan shader)");
+                        var commandoRenderer = commandoBody ? commandoBody.GetComponentInChildren<SkinnedMeshRenderer>() : null;
+                        if (commandoRenderer && commandoRenderer.material)
+                        {
+                            material.shader = commandoRenderer.material.shader;
+                        }
+                    }
+                    else if (prefab == "RoR2/Base/Shopkeeper/ShopkeeperBody.prefab")
+                    {
+                        //meshes[position].sharedMaterials[i] = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Commando/CommandoBody.prefab").WaitForCompletion().GetComponentInChildren<SkinnedMeshRenderer>().material;
+                        var shopMaterial = Assets.LoadMaterial(png);
+                        if (shopMaterial)
+                        {
+                            meshes[position].sharedMaterials[i] = shopMaterial;
+                            material = shopMaterial;
+                        }
+                    }
+                    material.color = Color.white;
+                    if (texture)
+                    {
+                        material.mainTexture = texture;
+                    }
+                    if (blank)
+                    {
+                        material.SetTexture("_EmTex", blank);
+                    }
+                    material.SetTexture("_NormalTex", null);
+                    if (png != null && png.Contains("frog"))
+                    {
+                        material.SetTexture("_FresnelRamp", null);
+                    }
+                    if (png != null && png.Contains("shop"))
+                    {
+                        material.SetTexture("_FlowHeightRamp", null);
+                        material.SetTexture("_FlowHeightmap", null);
+                    }
+                    if (png != null && png.Contains("dankengine") && meshes.Length > 1 && meshes[1] && meshes[1].sharedMaterials.Length > 0 && meshes[1].sharedMaterials[0] && texture)
+                    {
+                        meshes[1].sharedMaterials[0].SetTexture("_MainTex", texture);
+                        material.SetTexture("_FresnelRamp", null);
+                        material.SetTexture("_FlowHeightRamp", null);
+                        material.SetTexture("_FlowHeightmap", null);
+                    }
+                }
+                if (replaceothers)
+                {
+                    for (int i = 0; i < meshes.Length; i++)
+                    {
+                        if (i != position && meshes[i])
+                        {
+                            meshes[i].sharedMesh = targetMesh;
+                        }
                     }
                 }
             }
-        }
         public static void ReplaceModel(SkinnedMeshRenderer meshes, string mesh, string png)
         {
             meshes.sharedMesh = Assets.Load<Mesh>(mesh);
@@ -101,24 +146,60 @@ namespace MoistureUpset
         }
         public static void ReplaceModel(GameObject fab, string mesh, string png, int position = 0, bool replaceothers = false)
         {
+            if (!fab)
+            {
+                DebugClass.Log("ReplaceModel skipped: source GameObject is null.");
+                return;
+            }
+
             var meshes = fab.GetComponentsInChildren<SkinnedMeshRenderer>();
-            meshes[position].sharedMesh = Assets.Load<Mesh>(mesh);
+            if (meshes == null || meshes.Length == 0)
+            {
+                DebugClass.Log($"ReplaceModel skipped for '{fab.name}': no skinned meshes found.");
+                return;
+            }
+            if (position < 0 || position >= meshes.Length || !meshes[position])
+            {
+                DebugClass.Log($"ReplaceModel skipped for '{fab.name}': invalid skinned mesh index {position} (count={meshes.Length}).");
+                return;
+            }
+
+            var targetMesh = Assets.Load<Mesh>(mesh);
+            if (!targetMesh)
+            {
+                DebugClass.Log($"ReplaceModel skipped for '{fab.name}': mesh '{mesh}' could not be loaded.");
+                return;
+            }
+            meshes[position].sharedMesh = targetMesh;
+
             var texture = Assets.Load<Texture>(png);
             var blank = Assets.Load<Texture>("@MoistureUpset_na:assets/blank.png");
             for (int i = 0; i < meshes[position].sharedMaterials.Length; i++)
             {
-                meshes[position].sharedMaterials[i].color = Color.white;
-                meshes[position].sharedMaterials[i].mainTexture = texture;
-                meshes[position].sharedMaterials[i].SetTexture("_EmTex", blank);
-                meshes[position].sharedMaterials[i].SetTexture("_NormalTex", null);
-                if (png.Contains("frog"))
+                var material = meshes[position].sharedMaterials[i];
+                if (!material)
                 {
-                    meshes[position].sharedMaterials[i].SetTexture("_FresnelRamp", null);
+                    continue;
                 }
-                if (png.Contains("shop"))
+
+                material.color = Color.white;
+                if (texture)
                 {
-                    meshes[position].sharedMaterials[i].SetTexture("_FlowHeightRamp", null);
-                    meshes[position].sharedMaterials[i].SetTexture("_FlowHeightmap", null);
+                    material.mainTexture = texture;
+                }
+                if (blank)
+                {
+                    material.SetTexture("_EmTex", blank);
+                }
+                material.SetTexture("_NormalTex", null);
+                if (png != null && png.Contains("frog"))
+                {
+                    material.SetTexture("_FresnelRamp", null);
+                }
+                if (png != null && png.Contains("shop"))
+                {
+                    material.SetTexture("_FlowHeightRamp", null);
+                    material.SetTexture("_FlowHeightmap", null);
                 }
                 //try
                 //{
@@ -137,9 +218,9 @@ namespace MoistureUpset
             {
                 for (int i = 0; i < meshes.Length; i++)
                 {
-                    if (i != position)
+                    if (i != position && meshes[i])
                     {
-                        meshes[i].sharedMesh = Assets.Load<Mesh>(mesh);
+                        meshes[i].sharedMesh = targetMesh;
                     }
                 }
             }
@@ -2621,32 +2702,47 @@ namespace MoistureUpset
                     }
                 }
             };
-            On.RoR2.ArtifactTrialMissionController.CombatState.OnEnter += (orig, self) =>
+            try
             {
-                var mainBody = NetworkUser.readOnlyLocalPlayersList[0].master?.GetBody();
-                AkSoundEngine.ExecuteActionOnEvent(3772119855, AkActionOnEventType.AkActionOnEventType_Stop);
-                AkSoundEngine.PostEvent("ArtifactLoop", mainBody.gameObject);
-                orig(self);
-            };
-            On.RoR2.ArtifactTrialMissionController.CombatState.OnExit += (orig, self) =>
+                On.RoR2.ArtifactTrialMissionController.CombatState.OnEnter += (orig, self) =>
+                {
+                    CharacterBody mainBody = null;
+                    if (NetworkUser.readOnlyLocalPlayersList.Count > 0)
+                    {
+                        mainBody = NetworkUser.readOnlyLocalPlayersList[0].master?.GetBody();
+                    }
+
+                    AkSoundEngine.ExecuteActionOnEvent(3772119855, AkActionOnEventType.AkActionOnEventType_Stop);
+                    if (mainBody)
+                    {
+                        AkSoundEngine.PostEvent("ArtifactLoop", mainBody.gameObject);
+                    }
+                    orig(self);
+                };
+                On.RoR2.ArtifactTrialMissionController.CombatState.OnExit += (orig, self) =>
+                {
+                    try
+                    {
+                        AkSoundEngine.ExecuteActionOnEvent(1462303513, AkActionOnEventType.AkActionOnEventType_Stop);
+                        AkSoundEngine.SetRTPCValue("BossMusicActive", 0);
+                        if (MoistureUpsetMod.musicController)
+                        {
+                            AkSoundEngine.PostEvent("StopFanFare", MoistureUpsetMod.musicController.gameObject);
+                        }
+                        AkSoundEngine.SetRTPCValue("BossDead", 1f);
+                        if (BigJank.getOptionValue(Settings.Fanfare) && NetworkServer.active)
+                            new SyncFanFare(UnityEngine.Random.Range(0, SyncFanFare.songs.Length)).Send(R2API.Networking.NetworkDestination.Clients);
+                    }
+                    catch (Exception)
+                    {
+                    }
+                    orig(self);
+                };
+            }
+            catch (Exception e)
             {
-                try
-                {
-                    //var c = GameObject.FindObjectOfType<MusicController>();
-                    var mainBody = NetworkUser.readOnlyLocalPlayersList[0].master?.GetBody();
-                    AkSoundEngine.ExecuteActionOnEvent(1462303513, AkActionOnEventType.AkActionOnEventType_Stop);
-                    AkSoundEngine.SetRTPCValue("BossMusicActive", 0);
-                    AkSoundEngine.PostEvent("StopFanFare", MoistureUpsetMod.musicController.gameObject);
-                    AkSoundEngine.SetRTPCValue("BossDead", 1f);
-                    if (BigJank.getOptionValue(Settings.Fanfare) && NetworkServer.active)
-                        new SyncFanFare(UnityEngine.Random.Range(0, SyncFanFare.songs.Length)).Send(R2API.Networking.NetworkDestination.Clients);
-                    //AkSoundEngine.PostEvent("PlayFanFare", Moisture_Upset.musicController.gameObject);
-                }
-                catch (Exception)
-                {
-                }
-                orig(self);
-            };
+                DebugClass.Log($"Skipping Cereal combat hooks: {e.GetType().Name}: {e.Message}");
+            }
         }
         private static void Twitch()
         {

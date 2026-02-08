@@ -113,62 +113,63 @@ namespace MoistureUpset
 
         public static void PlayerDeath()
         {
-            if (BigJank.getOptionValue(Settings.PlayerDeathChat))
-                On.RoR2.GlobalEventManager.OnPlayerCharacterDeath += (orig, report) =>
+            if (_playerDeathHooked || !BigJank.getOptionValue(Settings.PlayerDeathChat))
+                return;
+
+            _playerDeathHooked = true;
+            On.RoR2.GlobalEventManager.OnPlayerCharacterDeath += (orig, self, report, victimNetworkUser) =>
             {
-                orig(report);
+                orig(self, report, victimNetworkUser);
                 try
                 {
-                    return;
+                    List<string> quotes = new List<string> { "I wasn't even trying", "If ya'll would help me I wouldn't have died...", "Nice one hit protection game", "HOW DID I DIE?????", "The first game was better", "Whatever", "Yeah alright, thats cool" };
+                    if (BigJank.getOptionValue(Settings.NSFW))
+                    {
+                        quotes.Add("I fucking hate this game");
+                    }
+
+                    string attackerName = report?.attackerMaster?.name?.ToUpperInvariant() ?? string.Empty;
+                    if (attackerName.Contains("MAGMAWORM"))
+                    {
+                        for (int i = 0; i < 3; i++)
+                            quotes.Add("The magma worm is such bullshit");
+                    }
+                    else if (attackerName.Contains("ELECTRICWORM"))
+                    {
+                        for (int i = 0; i < 3; i++)
+                            quotes.Add("Why does it get lightning? It's already strong enough");
+                    }
+                    else if (attackerName.Contains("BROTHERHURT"))
+                    {
+                        for (int i = 0; i < 3; i++)
+                            quotes.Add("This final phase sucks so much");
+                    }
+                    else if (attackerName.Contains("WISPMASTER"))
+                    {
+                        for (int i = 0; i < 3; i++)
+                            quotes.Add("Unfucking dodgeable");
+                    }
+                    else if (attackerName.Contains("VAGRANT"))
+                    {
+                        for (int i = 0; i < 3; i++)
+                            quotes.Add("How are you supposed to dodge that????");
+                    }
+                    else if (attackerName.Contains("LEMURIANBRUISERMASTER"))
+                    {
+                        for (int i = 0; i < 3; i++)
+                            quotes.Add("The fire breath is so annoying");
+                    }
+
+                    Chat.SendBroadcastChat(new Chat.UserChatMessage
+                    {
+                        sender = victimNetworkUser?.gameObject,
+                        text = quotes[UnityEngine.Random.Range(0, quotes.Count)],
+                    });
                 }
-                List<string> quotes = new List<string> { "I wasn't even trying", "If ya'll would help me I wouldn't have died...", "Nice one hit protection game", "HOW DID I DIE?????", "The first game was better", "Whatever", "Yeah alright, thats cool" };
-                if (BigJank.getOptionValue(Settings.NSFW))
+                catch (Exception)
                 {
-                    quotes.Add("I fucking hate this game");
                 }
-                if (report.attackerMaster.name.ToUpper().Contains("MAGMAWORM"))
-                {
-                    for (int i = 0; i < 3; i++)
-                        quotes.Add("The magma worm is such bullshit");
-                }
-                else if (report.attackerMaster.name.ToUpper().Contains("ELECTRICWORM"))
-                {
-                    for (int i = 0; i < 3; i++)
-                        quotes.Add("Why does it get lightning? It's already strong enough");
-                }
-                else if (report.attackerMaster.name.ToUpper().Contains("BROTHERHURT"))
-                {
-                    for (int i = 0; i < 3; i++)
-                        quotes.Add("This final phase sucks so much");
-                }
-                else if (report.attackerMaster.name.ToUpper().Contains("WISPMASTER"))
-                {
-                    for (int i = 0; i < 3; i++)
-                        quotes.Add("Unfucking dodgeable");
-                }
-                else if (report.attackerMaster.name.ToUpper().Contains("VAGRANT"))
-                {
-                    for (int i = 0; i < 3; i++)
-                        quotes.Add("How are you supposed to dodge that????");
-                }
-                else if (report.attackerMaster.name.ToUpper().Contains("LEMURIANBRUISERMASTER"))
-                {
-                    for (int i = 0; i < 3; i++)
-                        quotes.Add("The fire breath is so annoying");
-                }
-                //else if (UnityEngine.Random.Range(0, 1000) == 5)//maybe have a dummy super rare easter egg?
-                //{
-                //    quotes.Add("");
-                //}
-                Chat.SendBroadcastChat(new Chat.UserChatMessage
-                {
-                    sender = user.gameObject,
-                    text = quotes[UnityEngine.Random.Range(0, quotes.Count - 1)],
-                });
-            }
-            catch (Exception)
-            {
-            }
+            };
         }
         public static void PreGame()
         {
@@ -663,42 +664,60 @@ namespace MoistureUpset
                 }
                 orig(self, t, cT, tB);
             };
-            On.RoR2.UI.ObjectivePanelController.FindTeleporterObjectiveTracker.ctor += (orig, self) =>
+            void TryRegisterObjectiveHook(string hookName, Action register)
             {
-                orig(self);
                 try
                 {
-                    AkSoundEngine.SetRTPCValue("BossDead", 0f);
+                    register();
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
-
+                    DebugClass.Log($"Skipping {hookName} hook: {e.GetType().Name}: {e.Message}");
                 }
-            };
-            On.RoR2.UI.ObjectivePanelController.ActivateGoldshoreBeaconTracker.ctor += (orig, self) =>
+            }
+
+            TryRegisterObjectiveHook("ObjectivePanelController.FindTeleporterObjectiveTracker.ctor", () =>
             {
-                orig(self);
-                try
+                On.RoR2.UI.ObjectivePanelController.FindTeleporterObjectiveTracker.ctor += (orig, self) =>
                 {
-                    AkSoundEngine.SetRTPCValue("BossDead", 0f);
-                }
-                catch (Exception)
-                {
-
-                }
-            };
-            On.RoR2.UI.ObjectivePanelController.DestroyTimeCrystals.ctor += (orig, self) =>
+                    orig(self);
+                    try
+                    {
+                        AkSoundEngine.SetRTPCValue("BossDead", 0f);
+                    }
+                    catch (Exception)
+                    {
+                    }
+                };
+            });
+            TryRegisterObjectiveHook("ObjectivePanelController.ActivateGoldshoreBeaconTracker.ctor", () =>
             {
-                orig(self);
-                try
+                On.RoR2.UI.ObjectivePanelController.ActivateGoldshoreBeaconTracker.ctor += (orig, self) =>
                 {
-                    AkSoundEngine.SetRTPCValue("BossDead", 0f);
-                }
-                catch (Exception)
+                    orig(self);
+                    try
+                    {
+                        AkSoundEngine.SetRTPCValue("BossDead", 0f);
+                    }
+                    catch (Exception)
+                    {
+                    }
+                };
+            });
+            TryRegisterObjectiveHook("ObjectivePanelController.DestroyTimeCrystals.ctor", () =>
+            {
+                On.RoR2.UI.ObjectivePanelController.DestroyTimeCrystals.ctor += (orig, self) =>
                 {
-
-                }
-            };
+                    orig(self);
+                    try
+                    {
+                        AkSoundEngine.SetRTPCValue("BossDead", 0f);
+                    }
+                    catch (Exception)
+                    {
+                    }
+                };
+            });
             On.RoR2.UI.ObjectivePanelController.AddObjectiveTracker += (orig, self, tracker) =>
             {
                 orig(self, tracker);
@@ -797,25 +816,28 @@ namespace MoistureUpset
                 {
                 }
             };
-            On.RoR2.UI.ObjectivePanelController.FinishTeleporterObjectiveTracker.ctor += (orig, self) =>
+            TryRegisterObjectiveHook("ObjectivePanelController.FinishTeleporterObjectiveTracker.ctor", () =>
             {
-                orig(self);
-                try
+                On.RoR2.UI.ObjectivePanelController.FinishTeleporterObjectiveTracker.ctor += (orig, self) =>
                 {
-                    var mainBody = NetworkUser.readOnlyLocalPlayersList[0].master?.GetBody();
-                    AkSoundEngine.ExecuteActionOnEvent(1462303513, AkActionOnEventType.AkActionOnEventType_Stop);
-                    AkSoundEngine.SetRTPCValue("BossMusicActive", 0);
-                    AkSoundEngine.PostEvent("StopFanFare", MoistureUpsetMod.musicController.gameObject);
-                    AkSoundEngine.SetRTPCValue("BossDead", 1f);
-                    if (BigJank.getOptionValue(Settings.Fanfare) && NetworkServer.active)
-                        new SyncFanFare(UnityEngine.Random.Range(0, SyncFanFare.songs.Length)).Send(R2API.Networking.NetworkDestination.Clients);
-                    //AkSoundEngine.PostEvent("PlayFanFare", MoistureUpsetMod.musicController.gameObject);
-                    MLG.bossOver = true;
-                }
-                catch (Exception)
-                {
-                }
-            };
+                    orig(self);
+                    try
+                    {
+                        var mainBody = NetworkUser.readOnlyLocalPlayersList[0].master?.GetBody();
+                        AkSoundEngine.ExecuteActionOnEvent(1462303513, AkActionOnEventType.AkActionOnEventType_Stop);
+                        AkSoundEngine.SetRTPCValue("BossMusicActive", 0);
+                        AkSoundEngine.PostEvent("StopFanFare", MoistureUpsetMod.musicController.gameObject);
+                        AkSoundEngine.SetRTPCValue("BossDead", 1f);
+                        if (BigJank.getOptionValue(Settings.Fanfare) && NetworkServer.active)
+                            new SyncFanFare(UnityEngine.Random.Range(0, SyncFanFare.songs.Length)).Send(R2API.Networking.NetworkDestination.Clients);
+                        //AkSoundEngine.PostEvent("PlayFanFare", MoistureUpsetMod.musicController.gameObject);
+                        MLG.bossOver = true;
+                    }
+                    catch (Exception)
+                    {
+                    }
+                };
+            });
         }
         public static void Somebody()
         {

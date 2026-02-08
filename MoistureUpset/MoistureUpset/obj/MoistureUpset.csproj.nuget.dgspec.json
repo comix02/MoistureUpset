@@ -1,38 +1,31 @@
 {
   "format": 1,
   "restore": {
-    "J:\\Wet Danger\\WetDanger\\MoistureUpset\\MoistureUpset\\MoistureUpset.csproj": {}
+    "\\\\wsl.localhost\\Ubuntu\\home\\user\\MoistureUpset\\MoistureUpset\\MoistureUpset\\MoistureUpset.csproj": {}
   },
   "projects": {
-    "J:\\Wet Danger\\WetDanger\\MoistureUpset\\MoistureUpset\\MoistureUpset.csproj": {
+    "\\\\wsl.localhost\\Ubuntu\\home\\user\\MoistureUpset\\MoistureUpset\\MoistureUpset\\MoistureUpset.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "J:\\Wet Danger\\WetDanger\\MoistureUpset\\MoistureUpset\\MoistureUpset.csproj",
+        "projectUniqueName": "\\\\wsl.localhost\\Ubuntu\\home\\user\\MoistureUpset\\MoistureUpset\\MoistureUpset\\MoistureUpset.csproj",
         "projectName": "MoistureUpset",
-        "projectPath": "J:\\Wet Danger\\WetDanger\\MoistureUpset\\MoistureUpset\\MoistureUpset.csproj",
-        "packagesPath": "C:\\Users\\Bigma Male\\.nuget\\packages\\",
-        "outputPath": "J:\\Wet Danger\\WetDanger\\MoistureUpset\\MoistureUpset\\obj\\",
+        "projectPath": "\\\\wsl.localhost\\Ubuntu\\home\\user\\MoistureUpset\\MoistureUpset\\MoistureUpset\\MoistureUpset.csproj",
+        "packagesPath": "C:\\Users\\user\\.nuget\\packages\\",
+        "outputPath": "\\\\wsl.localhost\\Ubuntu\\home\\user\\MoistureUpset\\MoistureUpset\\MoistureUpset\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-        ],
         "configFilePaths": [
-          "C:\\Users\\Bigma Male\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+          "\\\\wsl.localhost\\Ubuntu\\home\\user\\MoistureUpset\\MoistureUpset\\NuGet.config"
         ],
         "originalTargetFrameworks": [
-          "netstandard2.0"
+          "netstandard2.1"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "https://api.nuget.org/v3/index.json": {},
           "https://nuget.bepinex.dev/v3/index.json": {},
           "https://nuget.windows10ce.com/nuget/v3/index.json": {}
         },
         "frameworks": {
-          "netstandard2.0": {
-            "targetAlias": "netstandard2.0",
+          "netstandard2.1": {
+            "targetAlias": "netstandard2.1",
             "projectReferences": {}
           }
         },
@@ -40,17 +33,73 @@
           "warnAsError": [
             "NU1605"
           ]
-        }
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "10.0.100"
       },
       "frameworks": {
-        "netstandard2.0": {
-          "targetAlias": "netstandard2.0",
+        "netstandard2.1": {
+          "targetAlias": "netstandard2.1",
           "dependencies": {
-            "NETStandard.Library": {
+            "BepInEx.Analyzers": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
               "suppressParent": "All",
               "target": "Package",
-              "version": "[2.0.3, )",
-              "autoReferenced": true
+              "version": "[1.0.*, )"
+            },
+            "BepInEx.Core": {
+              "target": "Package",
+              "version": "[5.4.*, )"
+            },
+            "BepInEx.PluginInfoProps": {
+              "target": "Package",
+              "version": "[1.*, )"
+            },
+            "MinVer": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[5.0.0, )"
+            },
+            "MonoMod": {
+              "target": "Package",
+              "version": "[22.5.1.1, )"
+            },
+            "R2API.CommandHelper": {
+              "target": "Package",
+              "version": "[1.0.2, )"
+            },
+            "R2API.Language": {
+              "target": "Package",
+              "version": "[1.1.0, )"
+            },
+            "R2API.Loadout": {
+              "target": "Package",
+              "version": "[1.0.2, )"
+            },
+            "R2API.Networking": {
+              "target": "Package",
+              "version": "[1.0.4, )"
+            },
+            "R2API.Sound": {
+              "target": "Package",
+              "version": "[1.0.3, )"
+            },
+            "RiskOfRain2.GameLibs": {
+              "target": "Package",
+              "version": "[1.4.1-r.0, )"
+            },
+            "Rune580.Mods.RiskOfRain2.RiskOfOptions": {
+              "target": "Package",
+              "version": "[2.8.5, )"
+            },
+            "UnityEngine.Modules": {
+              "target": "Package",
+              "version": "[2021.3.33, )"
             }
           },
           "imports": [
@@ -64,7 +113,18 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.100\\RuntimeIdentifierGraph.json"
+          "downloadDependencies": [
+            {
+              "name": "NETStandard.Library.Ref",
+              "version": "[2.1.0, 2.1.0]"
+            }
+          ],
+          "frameworkReferences": {
+            "NETStandard.Library": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.102\\RuntimeIdentifierGraph.json"
         }
       }
     }

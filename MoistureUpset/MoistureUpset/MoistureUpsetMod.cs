@@ -172,39 +172,103 @@ namespace MoistureUpset
 
         private void SceneManager_sceneLoaded(Scene arg0, LoadSceneMode arg1)
         {
+            if (arg0.name == "title" || arg0.name == "lobby" || arg0.name == "logbook" || arg0.name == "intro")
+            {
+                Cursor.lockState = CursorLockMode.None;
+                Cursor.visible = true;
+            }
+
             if (arg0.name == "intro")
             {
+                var introPlayerPrefab = Assets.Load<GameObject>("@MoistureUpset_Intro:assets/video/introplayer.prefab");
+                if (!introPlayerPrefab)
+                {
+                    DebugClass.Log("Skipping intro replacement: intro player prefab is missing.");
+                    return;
+                }
+
+                var sceneCameraObject = GameObject.Find("Scene Camera");
+                var sceneCamera = sceneCameraObject ? sceneCameraObject.GetComponent<Camera>() : null;
+                if (!sceneCamera)
+                {
+                    DebugClass.Log("Skipping intro replacement: Scene Camera was not found.");
+                    return;
+                }
+
+                if (!introPlayerPrefab.GetComponentInChildren<VideoPlayer>(true))
+                {
+                    DebugClass.Log("Skipping intro replacement: intro player prefab has no VideoPlayer.");
+                    return;
+                }
+
                 var cutsceneController = GameObject.Find("CutsceneController");
+                if (cutsceneController)
+                {
+                    var startEvent = cutsceneController.GetComponentInChildren<StartEvent>();
+                    if (startEvent != null)
+                    {
+                        startEvent.action.RemoveAllListeners();
+                    }
+                }
 
-                cutsceneController.GetComponentInChildren<StartEvent>().action.RemoveAllListeners();
+                void SafeDestroyObject(string objectName)
+                {
+                    var obj = GameObject.Find(objectName);
+                    if (obj)
+                    {
+                        DestroyImmediate(obj);
+                    }
+                }
 
-                //GameObject.Find("SkipVoteOverlay").GetComponentInChildren<InputResponse>().onPress.AddListener(delegate { RoR2.Console.instance.SubmitCmd((NetworkUser)null, "set_scene title"); });
+                void SafeDestroyComponent<T>(GameObject owner) where T : Component
+                {
+                    if (!owner)
+                    {
+                        return;
+                    }
 
-                //DestroyImmediate(cutsceneController);
-                DestroyImmediate(GameObject.Find("Set 2 - Cabin"));
-                DestroyImmediate(GameObject.Find("Set 4 - Cargo"));
-                DestroyImmediate(GameObject.Find("Set 1 - Space"));
-                DestroyImmediate(GameObject.Find("Set 3 - Space, Small Planet"));
-                DestroyImmediate(GameObject.Find("cutscene intro"));
-                DestroyImmediate(GameObject.Find("MainArea"));
-                DestroyImmediate(GameObject.Find("Cutscene Space Skybox"));
+                    var component = owner.GetComponent<T>();
+                    if (component)
+                    {
+                        DestroyImmediate(component);
+                    }
+                }
 
-                DestroyImmediate(GameObject.Find("GlobalPostProcessVolume"));
-                DestroyImmediate(GameObject.Find("Scene Camera").GetComponent<BlurOptimized>());
-                DestroyImmediate(GameObject.Find("Scene Camera").GetComponent<TranslucentImageSource>());
-                DestroyImmediate(GameObject.Find("Scene Camera").GetComponent<PostProcessLayer>());
+                SafeDestroyObject("Set 2 - Cabin");
+                SafeDestroyObject("Set 4 - Cargo");
+                SafeDestroyObject("Set 1 - Space");
+                SafeDestroyObject("Set 3 - Space, Small Planet");
+                SafeDestroyObject("cutscene intro");
+                SafeDestroyObject("MainArea");
+                SafeDestroyObject("Cutscene Space Skybox");
+                SafeDestroyObject("GlobalPostProcessVolume");
+                SafeDestroyComponent<BlurOptimized>(sceneCameraObject);
+                SafeDestroyComponent<TranslucentImageSource>(sceneCameraObject);
+                SafeDestroyComponent<PostProcessLayer>(sceneCameraObject);
 
-                var videoPlayer = Instantiate(Assets.Load<GameObject>("@MoistureUpset_Intro:assets/video/introplayer.prefab"));
+                var videoPlayerObject = Instantiate(introPlayerPrefab);
+                var videoPlayer = videoPlayerObject ? videoPlayerObject.GetComponentInChildren<VideoPlayer>(true) : null;
+                if (!videoPlayer)
+                {
+                    DebugClass.Log("Skipping intro replacement: instantiated intro player has no VideoPlayer.");
+                    if (videoPlayerObject)
+                    {
+                        DestroyImmediate(videoPlayerObject);
+                    }
+                    return;
+                }
 
-                videoPlayer.GetComponentInChildren<VideoPlayer>().targetCamera = GameObject.Find("Scene Camera").GetComponent<Camera>();
+                videoPlayer.targetCamera = sceneCamera;
+                videoPlayer.loopPointReached -= IntroFinished;
+                videoPlayer.loopPointReached += IntroFinished;
+                videoPlayer.targetCameraAlpha = 1f;
+                videoPlayer.Play();
 
-                videoPlayer.GetComponentInChildren<VideoPlayer>().loopPointReached += IntroFinished;
-
-                videoPlayer.GetComponentInChildren<VideoPlayer>().targetCameraAlpha = 1;
-
-                videoPlayer.GetComponentInChildren<VideoPlayer>().Play();
-
-                AkSoundEngine.PostEvent("PlayOpening", GameObject.FindObjectOfType<GameObject>());
+                var eventObject = GameObject.FindObjectOfType<GameObject>();
+                if (eventObject)
+                {
+                    AkSoundEngine.PostEvent("PlayOpening", eventObject);
+                }
             }
 
             //if (arg0.name == "title")

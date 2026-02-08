@@ -80,8 +80,22 @@ namespace MoistureUpset
             EnemyReplacements.LoadResource("moisture_pungas");
             if (BigJank.getOptionValue(Settings.CurrencyChanges))
             {
-                var setting = Addressables.LoadAssetAsync<TMPro.TMP_Settings>("TextMesh Pro/TMP Settings.asset").WaitForCompletion();
-                setting.SetFieldValue("m_defaultSpriteAsset", Assets.Load<TMPro.TMP_SpriteAsset>("@MoistureUpset_moisture_pungas:assets/pungas/texInlineSprites.asset"));
+                try
+                {
+                    var setting = Addressables.LoadAssetAsync<TMPro.TMP_Settings>("TextMesh Pro/TMP Settings.asset").WaitForCompletion();
+                    if (setting != null)
+                    {
+                        setting.SetFieldValue("m_defaultSpriteAsset", Assets.Load<TMPro.TMP_SpriteAsset>("@MoistureUpset_moisture_pungas:assets/pungas/texInlineSprites.asset"));
+                    }
+                    else
+                    {
+                        DebugClass.Log("TMP settings asset not found, skipping Currency sprite override.");
+                    }
+                }
+                catch (Exception e)
+                {
+                    DebugClass.Log($"Failed to update TMP sprite defaults: {e.Message}");
+                }
 
                 EnemyReplacements.ReplaceMeshFilter("RoR2/Base/LunarCoin/PickupLunarCoin.prefab", "@MoistureUpset_moisture_pungas:assets/pungas/coin.mesh", "@MoistureUpset_moisture_pungas:assets/pungas/goldrobux_16.png");
 
