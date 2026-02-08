@@ -112,9 +112,9 @@ namespace MoistureUpset
         public static void PlayerDeath()
         {
             if (BigJank.getOptionValue(Settings.PlayerDeathChat))
-                On.RoR2.GlobalEventManager.OnPlayerCharacterDeath += (orig, self, report) =>
+                On.RoR2.GlobalEventManager.OnPlayerCharacterDeath += (orig, report) =>
             {
-                orig(self, report);
+                orig(report);
                 try
                 {
                     NetworkUser user = report.victimMaster?.playerCharacterMasterController?.networkUser;

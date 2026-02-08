@@ -3079,7 +3079,23 @@ namespace MoistureUpset
                 return;
             }
             GameObject gameObject = UnityEngine.Object.Instantiate<GameObject>(Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Command/CommandCube.prefab").WaitForCompletion(), createPickupInfo.position, createPickupInfo.rotation);
-            gameObject.GetComponent<PickupIndexNetworker>().NetworkpickupIndex = pickupIndex;
+            var pickupIndexNetworker = gameObject.GetComponent<PickupIndexNetworker>();
+            if (pickupIndexNetworker)
+            {
+                var networkerType = pickupIndexNetworker.GetType();
+                var pickupIndexProperty = networkerType.GetProperty("NetworkpickupIndex")
+                    ?? networkerType.GetProperty("NetworkPickupIndex");
+                if (pickupIndexProperty != null)
+                {
+                    pickupIndexProperty.SetValue(pickupIndexNetworker, pickupIndex);
+                }
+                else
+                {
+                    var pickupIndexField = networkerType.GetField("pickupIndex", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+                        ?? networkerType.GetField("networkpickupIndex", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+                    pickupIndexField?.SetValue(pickupIndexNetworker, pickupIndex);
+                }
+            }
             gameObject.GetComponent<PickupPickerController>().SetOptionsFromPickupForCommandArtifact(pickupIndex);
             NetworkServer.Spawn(gameObject);
             shouldSpawn = false;
