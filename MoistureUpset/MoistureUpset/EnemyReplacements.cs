@@ -1829,14 +1829,14 @@ namespace MoistureUpset
             On.EntityStates.GolemMonster.ChargeLaser.OnEnter += (orig, self) =>
             {
                 EntityStates.GolemMonster.ChargeLaser.attackSoundString = "GolemChargeLaser";
-                self.outer.gameObject.GetComponent<GolemRandomizer>().Charge();
+                self.outer.gameObject.GetComponent<GolemRandomizer>()?.Charge();
                 //self.outer.gameObject.GetComponentInChildren<ModelLocator>().modelTransform.gameObject.GetComponentInChildren<CharacterModel>().baseRendererInfos[0].defaultMaterial = laser;
                 orig(self);
             };
             On.EntityStates.GolemMonster.FireLaser.OnEnter += (orig, self) =>
             {
                 EntityStates.GolemMonster.FireLaser.attackSoundString = "GolemFireLaser";
-                self.outer.gameObject.GetComponent<GolemRandomizer>().Shoot();
+                self.outer.gameObject.GetComponent<GolemRandomizer>()?.Shoot();
                 //self.outer.gameObject.GetComponentInChildren<ModelLocator>().modelTransform.gameObject.GetComponentInChildren<CharacterModel>().baseRendererInfos[0].defaultMaterial = nolaser;
                 orig(self);
             };
@@ -1863,7 +1863,11 @@ namespace MoistureUpset
             };
             ReplaceModel("RoR2/Base/Golem/GolemBody.prefab", "@MoistureUpset_noob:assets/N00b.mesh", "@MoistureUpset_noob:assets/Noob1Tex.png");
             var fab = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Golem/GolemBody.prefab").WaitForCompletion();
-            GolemRandomizer randomizer = fab.AddComponent<GolemRandomizer>();
+            var randomizer = fab.GetComponent<GolemRandomizer>();
+            if (!randomizer)
+            {
+                randomizer = fab.AddComponent<GolemRandomizer>();
+            }
             foreach (var item in fab.GetComponentInChildren<ModelLocator>().modelTransform.gameObject.GetComponentInChildren<CharacterModel>().GetComponentsInChildren<RoR2.ModelSkinController>())
             {
                 for (int i = 0; i < item.skins.Length; i++)
@@ -1875,6 +1879,8 @@ namespace MoistureUpset
                 }
             }
 
+            GolemRandomizer.materials.Clear();
+            GolemRandomizer.meshes.Clear();
             GolemRandomizer.materials.Add(Assets.RobloxMaterial("@MoistureUpset_noob:assets/Noob1Tex.png"));
             GolemRandomizer.materials.Add(Assets.RobloxMaterial("@MoistureUpset_noob:assets/robloxcharacters/elsa.png"));
             GolemRandomizer.materials.Add(Assets.RobloxMaterial("@MoistureUpset_noob:assets/robloxcharacters/spiderman.png"));
