@@ -28,17 +28,17 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="BepInEx.Core" Version="5.4.21" />
+    <PackageReference Include="BepInEx.Core" Version="5.4.*" />
     <PackageReference Include="BepInEx.PluginInfoProps" Version="1.*" />
     <PackageReference Include="MonoMod" Version="22.5.1.1" />
-    <PackageReference Include="R2API.CommandHelper" Version="1.0.1" />
-    <PackageReference Include="R2API.Language" Version="1.0.1" />
-    <PackageReference Include="R2API.Loadout" Version="1.0.2" />
-    <PackageReference Include="R2API.Networking" Version="1.0.2" />
-    <PackageReference Include="R2API.Sound" Version="1.0.2" />
-    <PackageReference Include="RiskOfRain2.GameLibs" Version="1.2.4-r.0" />
-    <PackageReference Include="Rune580.Mods.RiskOfRain2.RiskOfOptions" Version="2.8.0" />
-    <PackageReference Include="UnityEngine.Modules" Version="2019.4.26" />
+    <PackageReference Include="R2API.CommandHelper" Version="1.*" />
+    <PackageReference Include="R2API.Language" Version="1.*" />
+    <PackageReference Include="R2API.Loadout" Version="1.*" />
+    <PackageReference Include="R2API.Networking" Version="1.*" />
+    <PackageReference Include="R2API.Sound" Version="1.*" />
+    <PackageReference Include="RiskOfRain2.GameLibs" Version="1.*" />
+    <PackageReference Include="Rune580.Mods.RiskOfRain2.RiskOfOptions" Version="2.*" />
+    <PackageReference Include="UnityEngine.Modules" Version="2019.4.*" />
   </ItemGroup>
   
   <ItemGroup>
