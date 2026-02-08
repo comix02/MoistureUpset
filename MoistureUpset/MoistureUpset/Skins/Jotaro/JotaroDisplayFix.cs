@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using RoR2;
-using UnityEngine.AddressableAssets;
+using MoistureUpset;
 
 namespace MoistureUpset.Skins.Jotaro
 {
@@ -16,7 +16,11 @@ namespace MoistureUpset.Skins.Jotaro
 
         private void Start()
         {
-            var fab = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Captain/CaptainDisplay.prefab").WaitForCompletion();
+            var fab = AddressableLoader.LoadAsset<GameObject>("RoR2/Base/Captain/CaptainDisplay.prefab", "JotaroDisplayFix.Start");
+            if (!fab)
+            {
+                return;
+            }
 
             foreach (var smr in fab.GetComponentsInChildren<SkinnedMeshRenderer>())
             {

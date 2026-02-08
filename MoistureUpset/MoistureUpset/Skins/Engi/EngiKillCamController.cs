@@ -4,7 +4,7 @@ using System.Text;
 using UnityEngine;
 using RoR2;
 using System.Collections;
-using UnityEngine.AddressableAssets;
+using MoistureUpset;
 
 namespace MoistureUpset.Skins.Engi
 {
@@ -22,7 +22,21 @@ namespace MoistureUpset.Skins.Engi
         private void Start()
         {
             _screenTex = new Texture2D(Screen.width, Screen.height, TextureFormat.RGB24, false);
-            _screenMat = new Material(Addressables.LoadAssetAsync<Shader>($"RoR2/Base/Shaders/HGStandard.shader").WaitForCompletion());
+            var shader = AddressableLoader.LoadAsset<Shader>("RoR2/Base/Shaders/HGStandard.shader", "EngiKillCamController.Start");
+            if (shader)
+            {
+                _screenMat = new Material(shader);
+            }
+            else
+            {
+                var fallbackShader = Shader.Find("HGStandard");
+                if (!fallbackShader)
+                {
+                    DebugClass.Log("[Addressables] HGStandard shader fallback not found for EngiKillCamController.");
+                    return;
+                }
+                _screenMat = new Material(fallbackShader);
+            }
         }
 
         private void Update()

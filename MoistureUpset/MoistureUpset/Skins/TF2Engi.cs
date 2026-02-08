@@ -12,7 +12,7 @@ using System.Reflection;
 using System.Text;
 using MoistureUpset.Skins.ItemDisplayRules;
 using UnityEngine;
-using UnityEngine.AddressableAssets;
+using MoistureUpset;
 using Object = UnityEngine.Object;
 
 namespace MoistureUpset.Skins
@@ -178,9 +178,9 @@ namespace MoistureUpset.Skins
             var engiTurretSkinDef = SkinManager.skins["EngiTurretBody"];
             var engiWalkerTurretSkinDef = SkinManager.skins["EngiWalkerTurretBody"];
             
-            var engiGrenadePrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Engi/EngiGrenadeProjectile.prefab").WaitForCompletion();
-            var engiBubblePrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Engi/EngiBubbleShield.prefab").WaitForCompletion();
-            var engiHarpoonPrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Engi/EngiHarpoon.prefab").WaitForCompletion();
+            var engiGrenadePrefab = AddressableLoader.LoadAsset<GameObject>("RoR2/Base/Engi/EngiGrenadeProjectile.prefab", "TF2Engi.EngiSkin");
+            var engiBubblePrefab = AddressableLoader.LoadAsset<GameObject>("RoR2/Base/Engi/EngiBubbleShield.prefab", "TF2Engi.EngiSkin");
+            var engiHarpoonPrefab = AddressableLoader.LoadAsset<GameObject>("RoR2/Base/Engi/EngiHarpoon.prefab", "TF2Engi.EngiSkin");
 
             var skin = new LoadoutAPI.SkinDefInfo
             {
@@ -292,9 +292,11 @@ namespace MoistureUpset.Skins
         // A working solution for the display elements to have the right skin.
         private static void EngiDisplayFix()
         {
-            var fab = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Engi/EngiDisplay.prefab").WaitForCompletion();
-
-            fab.AddComponent<EngiDisplayFix>(); // Still not a great system, but it works.
+            var fab = AddressableLoader.LoadAsset<GameObject>("RoR2/Base/Engi/EngiDisplay.prefab", "TF2Engi.EngiDisplayFix");
+            if (fab)
+            {
+                fab.AddComponent<EngiDisplayFix>(); // Still not a great system, but it works.
+            }
         }
 
         // Projectile Replacements
@@ -382,10 +384,13 @@ namespace MoistureUpset.Skins
         // Add stuff to the character prefab here
         private static void AddToPrefab()
         {
-            GameObject engiBody = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Engi/EngiBody.prefab").WaitForCompletion(); // load engibody prefab
-            engiBody.AddComponent<AddMedicIcon>();
-            engiBody.AddComponent<EngiHurt>();
-            //engiBody.AddComponent<EngiKillCamController>();
+            GameObject engiBody = AddressableLoader.LoadAsset<GameObject>("RoR2/Base/Engi/EngiBody.prefab", "TF2Engi.AddToPrefab"); // load engibody prefab
+            if (engiBody)
+            {
+                engiBody.AddComponent<AddMedicIcon>();
+                engiBody.AddComponent<EngiHurt>();
+                //engiBody.AddComponent<EngiKillCamController>();
+            }
         }
     }
 }

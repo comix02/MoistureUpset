@@ -16,8 +16,8 @@ using RiskOfOptions;
 using MoistureUpset.InteractReplacements.SodaBarrel;
 using R2API.Networking.Interfaces;
 using UnityEngine.Networking;
-using UnityEngine.AddressableAssets;
 using MoistureUpset.NetMessages;
+using MoistureUpset;
 
 namespace MoistureUpset.InteractReplacements
 {
@@ -33,129 +33,188 @@ namespace MoistureUpset.InteractReplacements
 
             if (BigJank.getOptionValue(Settings.Interactables))
             {
+                const string context = "Interactables.ReloadChests";
 
                 var blank = Assets.Load<Texture>("@MoistureUpset_na:assets/blank.png");
-                var cUm = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Chest1/Chest1.prefab").WaitForCompletion();
+                var cUm = AddressableLoader.LoadAsset<GameObject>("RoR2/Base/Chest1/Chest1.prefab", context);
                 EnemyReplacements.ReplaceModel("RoR2/Base/Chest1/Chest1.prefab", "@MoistureUpset_moisture_chests:assets/arbitraryfolder/smallchest.mesh", "@MoistureUpset_moisture_chests:assets/arbitraryfolder/smallchest.png");
-                cUm.GetComponentInChildren<SkinnedMeshRenderer>().material.SetTexture("_SplatmapTex", Assets.Load<Texture>("@MoistureUpset_moisture_chests:assets/arbitraryfolder/smallchestsplat.png"));
-                cUm.AddComponent<NewSplatSystemRemover>();
+                if (cUm)
+                {
+                    cUm.GetComponentInChildren<SkinnedMeshRenderer>().material.SetTexture("_SplatmapTex", Assets.Load<Texture>("@MoistureUpset_moisture_chests:assets/arbitraryfolder/smallchestsplat.png"));
+                    cUm.AddComponent<NewSplatSystemRemover>();
+                }
 
 
 
                 EnemyReplacements.ReplaceModel("RoR2/Base/CategoryChest/CategoryChestDamage.prefab", "@MoistureUpset_moisture_chests:assets/arbitraryfolder/categorychest.mesh", "@MoistureUpset_moisture_chests:assets/arbitraryfolder/damagechest.png");
                 EnemyReplacements.ReplaceMeshFilter("RoR2/Base/CategoryChest/CategoryChestDamage.prefab", "@MoistureUpset_na:assets/na1.mesh");
-                cUm = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/CategoryChest/CategoryChestDamage.prefab").WaitForCompletion();
-                cUm.GetComponentInChildren<SkinnedMeshRenderer>().material.SetTexture("_SplatmapTex", Assets.Load<Texture>("@MoistureUpset_moisture_chests:assets/arbitraryfolder/largechestsplat.png"));
-                cUm.AddComponent<NewSplatSystemRemover>();
+                cUm = AddressableLoader.LoadAsset<GameObject>("RoR2/Base/CategoryChest/CategoryChestDamage.prefab", context);
+                if (cUm)
+                {
+                    cUm.GetComponentInChildren<SkinnedMeshRenderer>().material.SetTexture("_SplatmapTex", Assets.Load<Texture>("@MoistureUpset_moisture_chests:assets/arbitraryfolder/largechestsplat.png"));
+                    cUm.AddComponent<NewSplatSystemRemover>();
+                }
 
 
                 EnemyReplacements.ReplaceModel("RoR2/Base/CategoryChest/CategoryChestHealing.prefab", "@MoistureUpset_moisture_chests:assets/arbitraryfolder/categorychest.mesh", "@MoistureUpset_moisture_chests:assets/arbitraryfolder/healingchest.png");
                 EnemyReplacements.ReplaceMeshFilter("RoR2/Base/CategoryChest/CategoryChestHealing.prefab", "@MoistureUpset_na:assets/na1.mesh");
-                cUm = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/CategoryChest/CategoryChestHealing.prefab").WaitForCompletion();
-                cUm.GetComponentInChildren<SkinnedMeshRenderer>().material.SetTexture("_SplatmapTex", Assets.Load<Texture>("@MoistureUpset_moisture_chests:assets/arbitraryfolder/largechestsplat.png"));
-                cUm.AddComponent<NewSplatSystemRemover>();
+                cUm = AddressableLoader.LoadAsset<GameObject>("RoR2/Base/CategoryChest/CategoryChestHealing.prefab", context);
+                if (cUm)
+                {
+                    cUm.GetComponentInChildren<SkinnedMeshRenderer>().material.SetTexture("_SplatmapTex", Assets.Load<Texture>("@MoistureUpset_moisture_chests:assets/arbitraryfolder/largechestsplat.png"));
+                    cUm.AddComponent<NewSplatSystemRemover>();
+                }
 
 
                 EnemyReplacements.ReplaceModel("RoR2/Base/CategoryChest/CategoryChestUtility.prefab", "@MoistureUpset_moisture_chests:assets/arbitraryfolder/categorychest.mesh", "@MoistureUpset_moisture_chests:assets/arbitraryfolder/utilitychest.png");
                 EnemyReplacements.ReplaceMeshFilter("RoR2/Base/CategoryChest/CategoryChestUtility.prefab", "@MoistureUpset_na:assets/na1.mesh");
-                cUm = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/CategoryChest/CategoryChestUtility.prefab").WaitForCompletion();
-                cUm.GetComponentInChildren<SkinnedMeshRenderer>().material.SetTexture("_SplatmapTex", Assets.Load<Texture>("@MoistureUpset_moisture_chests:assets/arbitraryfolder/largechestsplat.png"));
-                cUm.AddComponent<NewSplatSystemRemover>();
+                cUm = AddressableLoader.LoadAsset<GameObject>("RoR2/Base/CategoryChest/CategoryChestUtility.prefab", context);
+                if (cUm)
+                {
+                    cUm.GetComponentInChildren<SkinnedMeshRenderer>().material.SetTexture("_SplatmapTex", Assets.Load<Texture>("@MoistureUpset_moisture_chests:assets/arbitraryfolder/largechestsplat.png"));
+                    cUm.AddComponent<NewSplatSystemRemover>();
+                }
 
 
                 EnemyReplacements.ReplaceModel("RoR2/Base/EquipmentBarrel/EquipmentBarrel.prefab", "@MoistureUpset_moisture_chests:assets/arbitraryfolder/shulker.mesh", "@MoistureUpset_moisture_chests:assets/arbitraryfolder/shulker.png");
-                cUm = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/EquipmentBarrel/EquipmentBarrel.prefab").WaitForCompletion();
-                cUm.GetComponentInChildren<SkinnedMeshRenderer>().material.SetInt("_Cull", 0);
-                cUm.AddComponent<equipmentbarrelfixer>();
-                cUm.GetComponentInChildren<SfxLocator>().openSound = "EquipmentBarrel";
+                cUm = AddressableLoader.LoadAsset<GameObject>("RoR2/Base/EquipmentBarrel/EquipmentBarrel.prefab", context);
+                if (cUm)
+                {
+                    cUm.GetComponentInChildren<SkinnedMeshRenderer>().material.SetInt("_Cull", 0);
+                    cUm.AddComponent<equipmentbarrelfixer>();
+                    cUm.GetComponentInChildren<SfxLocator>().openSound = "EquipmentBarrel";
+                }
 
 
                 EnemyReplacements.ReplaceModel("RoR2/Base/Chest2/Chest2.prefab", "@MoistureUpset_moisture_chests:assets/arbitraryfolder/largechest.mesh", "@MoistureUpset_moisture_chests:assets/arbitraryfolder/largechest.png");
                 EnemyReplacements.ReplaceModel("RoR2/Base/GoldChest/GoldChest.prefab", "@MoistureUpset_moisture_chests:assets/arbitraryfolder/goldchest.mesh", "@MoistureUpset_moisture_chests:assets/arbitraryfolder/goldchest.png");
-                cUm = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/GoldChest/GoldChest.prefab").WaitForCompletion();
-                cUm.GetComponentInChildren<SkinnedMeshRenderer>().material.shader = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Chest2/Chest2.prefab").WaitForCompletion().GetComponentInChildren<SkinnedMeshRenderer>().material.shader;
-                cUm.GetComponentInChildren<SkinnedMeshRenderer>().material.mainTexture.filterMode = FilterMode.Point;
-                cUm.GetComponentInChildren<ParticleSystem>().maxParticles = 0;
-                cUm.GetComponentInChildren<SfxLocator>().openSound = "GoldChest";
-                cUm.AddComponent<NewSplatSystemRemover>();
+                cUm = AddressableLoader.LoadAsset<GameObject>("RoR2/Base/GoldChest/GoldChest.prefab", context);
+                var chestTwo = AddressableLoader.LoadAsset<GameObject>("RoR2/Base/Chest2/Chest2.prefab", context);
+                if (cUm && chestTwo)
+                {
+                    cUm.GetComponentInChildren<SkinnedMeshRenderer>().material.shader = chestTwo.GetComponentInChildren<SkinnedMeshRenderer>().material.shader;
+                    cUm.GetComponentInChildren<SkinnedMeshRenderer>().material.mainTexture.filterMode = FilterMode.Point;
+                    cUm.GetComponentInChildren<ParticleSystem>().maxParticles = 0;
+                    cUm.GetComponentInChildren<SfxLocator>().openSound = "GoldChest";
+                    cUm.AddComponent<NewSplatSystemRemover>();
 
-                particles = Assets.Load<GameObject>("@MoistureUpset_moisture_chests:assets/arbitraryfolder/particles.prefab");
-                particles.transform.SetParent(cUm.transform);
-                particles.transform.localPosition = Vector3.zero;
+                    particles = Assets.Load<GameObject>("@MoistureUpset_moisture_chests:assets/arbitraryfolder/particles.prefab");
+                    particles.transform.SetParent(cUm.transform);
+                    particles.transform.localPosition = Vector3.zero;
+                }
 
                 EnemyReplacements.ReplaceModel("RoR2/Base/Barrel1/Barrel1.prefab", "@MoistureUpset_InteractReplacements_SodaBarrel_sodaspritz:assets/sodafountain/cylinder.mesh");
-                cUm = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Barrel1/Barrel1.prefab").WaitForCompletion();
-                cUm.GetComponentInChildren<SkinnedMeshRenderer>().material.SetTexture("_SplatmapTex", Assets.Load<Texture>("@MoistureUpset_InteractReplacements_SodaBarrel_sodaspritz:assets/sodafountain/sodaSplatmap.png"));
-
-
-                cUm.AddComponent<RandomizeSoda>();
+                cUm = AddressableLoader.LoadAsset<GameObject>("RoR2/Base/Barrel1/Barrel1.prefab", context);
+                if (cUm)
                 {
-                    GameObject spritzPrefab = Assets.Load<GameObject>("@MoistureUpset_InteractReplacements_SodaBarrel_sodaspritz:assets/sodafountain/soda spritz.prefab");
-                    spritzPrefab.transform.SetParent(cUm.transform);
-                    spritzPrefab.transform.localPosition = new Vector3(0, 1.2f, -0.4f);
+                    cUm.GetComponentInChildren<SkinnedMeshRenderer>().material.SetTexture("_SplatmapTex", Assets.Load<Texture>("@MoistureUpset_InteractReplacements_SodaBarrel_sodaspritz:assets/sodafountain/sodaSplatmap.png"));
+
+
+                    cUm.AddComponent<RandomizeSoda>();
+                    {
+                        GameObject spritzPrefab = Assets.Load<GameObject>("@MoistureUpset_InteractReplacements_SodaBarrel_sodaspritz:assets/sodafountain/soda spritz.prefab");
+                        spritzPrefab.transform.SetParent(cUm.transform);
+                        spritzPrefab.transform.localPosition = new Vector3(0, 1.2f, -0.4f);
+                    }
                 }
                 RandomizeSoda.textures = new Texture[]{ Assets.Load<Texture>("@MoistureUpset_InteractReplacements_SodaBarrel_sodaspritz:assets/sodafountain/cokacoon.png"), Assets.Load<Texture>("@MoistureUpset_InteractReplacements_SodaBarrel_sodaspritz:assets/sodafountain/drcoon.png"), Assets.Load<Texture>("@MoistureUpset_InteractReplacements_SodaBarrel_sodaspritz:assets/sodafountain/mtncoon.png"), Assets.Load<Texture>("@MoistureUpset_InteractReplacements_SodaBarrel_sodaspritz:assets/sodafountain/pepcoon.png"), Assets.Load<Texture>("@MoistureUpset_InteractReplacements_SodaBarrel_sodaspritz:assets/sodafountain/hicoon.png"), Assets.Load<Texture>("@MoistureUpset_InteractReplacements_SodaBarrel_sodaspritz:assets/sodafountain/spritecoon.png"), Assets.Load<Texture>("@MoistureUpset_InteractReplacements_SodaBarrel_sodaspritz:assets/sodafountain/fantacoon.png"), Assets.Load<Texture>("@MoistureUpset_InteractReplacements_SodaBarrel_sodaspritz:assets/sodafountain/watercoon.png"), Assets.Load<Texture>("@MoistureUpset_InteractReplacements_SodaBarrel_sodaspritz:assets/sodafountain/lioncoon.png") };
 
-                cUm.GetComponentInChildren<SfxLocator>().openSound = "Soda";
-                cUm.AddComponent<NewSplatSystemRemover>();
+                if (cUm)
+                {
+                    cUm.GetComponentInChildren<SfxLocator>().openSound = "Soda";
+                    cUm.AddComponent<NewSplatSystemRemover>();
+                }
 
 
-                cUm = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/TripleShopLarge/TripleShopLarge.prefab").WaitForCompletion();
-                cUm.GetComponentInChildren<MeshFilter>().mesh = Assets.Load<Mesh>("@MoistureUpset_na:assets/na1.mesh");
-                cUm.AddComponent<Fixers.spinnerfixer>().pos = 5;
+                cUm = AddressableLoader.LoadAsset<GameObject>("RoR2/Base/TripleShopLarge/TripleShopLarge.prefab", context);
+                if (cUm)
+                {
+                    cUm.GetComponentInChildren<MeshFilter>().mesh = Assets.Load<Mesh>("@MoistureUpset_na:assets/na1.mesh");
+                    cUm.AddComponent<Fixers.spinnerfixer>().pos = 5;
+                }
 
 
-                cUm = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/TripleShop/TripleShop.prefab").WaitForCompletion();
-                cUm.GetComponentInChildren<MeshFilter>().mesh = Assets.Load<Mesh>("@MoistureUpset_na:assets/na1.mesh");
-                cUm.AddComponent<Fixers.spinnerfixer>().pos = 4.5f;
+                cUm = AddressableLoader.LoadAsset<GameObject>("RoR2/Base/TripleShop/TripleShop.prefab", context);
+                if (cUm)
+                {
+                    cUm.GetComponentInChildren<MeshFilter>().mesh = Assets.Load<Mesh>("@MoistureUpset_na:assets/na1.mesh");
+                    cUm.AddComponent<Fixers.spinnerfixer>().pos = 4.5f;
+                }
 
 
-                cUm = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/TripleShopEquipment/TripleShopEquipment.prefab").WaitForCompletion();
-                cUm.GetComponentInChildren<MeshFilter>().mesh = Assets.Load<Mesh>("@MoistureUpset_na:assets/na1.mesh");
-                cUm.AddComponent<Fixers.spinnerfixer>().pos = 4.5f;
+                cUm = AddressableLoader.LoadAsset<GameObject>("RoR2/Base/TripleShopEquipment/TripleShopEquipment.prefab", context);
+                if (cUm)
+                {
+                    cUm.GetComponentInChildren<MeshFilter>().mesh = Assets.Load<Mesh>("@MoistureUpset_na:assets/na1.mesh");
+                    cUm.AddComponent<Fixers.spinnerfixer>().pos = 4.5f;
+                }
 
 
 
-                cUm = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/MultiShopTerminal/MultiShopTerminal.prefab").WaitForCompletion();
-                cUm.GetComponentInChildren<SkinnedMeshRenderer>().material = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Barrel1/Barrel1.prefab").WaitForCompletion().GetComponentInChildren<SkinnedMeshRenderer>().material;
+                var barrelMaterialSource = AddressableLoader.LoadAsset<GameObject>("RoR2/Base/Barrel1/Barrel1.prefab", context);
+                cUm = AddressableLoader.LoadAsset<GameObject>("RoR2/Base/MultiShopTerminal/MultiShopTerminal.prefab", context);
                 EnemyReplacements.ReplaceModel("RoR2/Base/MultiShopTerminal/MultiShopTerminal.prefab", "@MoistureUpset_moisture_chests:assets/arbitraryfolder/spinnerpart.mesh", "@MoistureUpset_moisture_chests:assets/arbitraryfolder/spinnerred.png");
-                cUm.GetComponentInChildren<SkinnedMeshRenderer>().material.SetTexture("_SplatmapTex", Assets.Load<Texture>("@MoistureUpset_moisture_chests:assets/arbitraryfolder/faheet.png"));
-                cUm.AddComponent<NewSplatSystemRemover>();
+                if (cUm && barrelMaterialSource)
+                {
+                    cUm.GetComponentInChildren<SkinnedMeshRenderer>().material = barrelMaterialSource.GetComponentInChildren<SkinnedMeshRenderer>().material;
+                    cUm.GetComponentInChildren<SkinnedMeshRenderer>().material.SetTexture("_SplatmapTex", Assets.Load<Texture>("@MoistureUpset_moisture_chests:assets/arbitraryfolder/faheet.png"));
+                    cUm.AddComponent<NewSplatSystemRemover>();
+                }
 
-                cUm = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/MultiShopLargeTerminal/MultiShopLargeTerminal.prefab").WaitForCompletion();
-                cUm.GetComponentInChildren<SkinnedMeshRenderer>().material = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Barrel1/Barrel1.prefab").WaitForCompletion().GetComponentInChildren<SkinnedMeshRenderer>().material;
+                cUm = AddressableLoader.LoadAsset<GameObject>("RoR2/Base/MultiShopLargeTerminal/MultiShopLargeTerminal.prefab", context);
                 EnemyReplacements.ReplaceModel("RoR2/Base/MultiShopLargeTerminal/MultiShopLargeTerminal.prefab", "@MoistureUpset_moisture_chests:assets/arbitraryfolder/spinnerpart.mesh", "@MoistureUpset_moisture_chests:assets/arbitraryfolder/spinnerred.png");
-                cUm.GetComponentInChildren<SkinnedMeshRenderer>().material.SetTexture("_SplatmapTex", Assets.Load<Texture>("@MoistureUpset_moisture_chests:assets/arbitraryfolder/faheet.png"));
-                cUm.AddComponent<NewSplatSystemRemover>();
+                if (cUm && barrelMaterialSource)
+                {
+                    cUm.GetComponentInChildren<SkinnedMeshRenderer>().material = barrelMaterialSource.GetComponentInChildren<SkinnedMeshRenderer>().material;
+                    cUm.GetComponentInChildren<SkinnedMeshRenderer>().material.SetTexture("_SplatmapTex", Assets.Load<Texture>("@MoistureUpset_moisture_chests:assets/arbitraryfolder/faheet.png"));
+                    cUm.AddComponent<NewSplatSystemRemover>();
+                }
 
-                cUm = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/MultiShopEquipmentTerminal/MultiShopEquipmentTerminal.prefab").WaitForCompletion();
-                cUm.GetComponentInChildren<SkinnedMeshRenderer>().material = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Barrel1/Barrel1.prefab").WaitForCompletion().GetComponentInChildren<SkinnedMeshRenderer>().material;
+                cUm = AddressableLoader.LoadAsset<GameObject>("RoR2/Base/MultiShopEquipmentTerminal/MultiShopEquipmentTerminal.prefab", context);
                 EnemyReplacements.ReplaceModel("RoR2/Base/MultiShopEquipmentTerminal/MultiShopEquipmentTerminal.prefab", "@MoistureUpset_moisture_chests:assets/arbitraryfolder/spinnerpart.mesh", "@MoistureUpset_moisture_chests:assets/arbitraryfolder/spinnerred.png");
-                cUm.GetComponentInChildren<SkinnedMeshRenderer>().material.SetTexture("_SplatmapTex", Assets.Load<Texture>("@MoistureUpset_moisture_chests:assets/arbitraryfolder/faheet.png"));
-                cUm.AddComponent<NewSplatSystemRemover>();
+                if (cUm && barrelMaterialSource)
+                {
+                    cUm.GetComponentInChildren<SkinnedMeshRenderer>().material = barrelMaterialSource.GetComponentInChildren<SkinnedMeshRenderer>().material;
+                    cUm.GetComponentInChildren<SkinnedMeshRenderer>().material.SetTexture("_SplatmapTex", Assets.Load<Texture>("@MoistureUpset_moisture_chests:assets/arbitraryfolder/faheet.png"));
+                    cUm.AddComponent<NewSplatSystemRemover>();
+                }
                 if (BigJank.getOptionValue(Settings.CurrencyChanges))
                 {
-                    cUm = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/NewtStatue/NewtStatue.prefab").WaitForCompletion();
-                    GameObject g = Assets.Load<GameObject>("@MoistureUpset_moisture_newtaltar:assets/testing/atoasteroven.prefab");
-                    g.transform.parent = cUm.transform;
-                    g.transform.localPosition = Vector3.zero;
-                    g.transform.localEulerAngles = Vector3.zero;
+                    cUm = AddressableLoader.LoadAsset<GameObject>("RoR2/Base/NewtStatue/NewtStatue.prefab", context);
+                    if (cUm)
+                    {
+                        GameObject g = Assets.Load<GameObject>("@MoistureUpset_moisture_newtaltar:assets/testing/atoasteroven.prefab");
+                        g.transform.parent = cUm.transform;
+                        g.transform.localPosition = Vector3.zero;
+                        g.transform.localEulerAngles = Vector3.zero;
+                    }
                 }
             }
             if (BigJank.getOptionValue(Settings.ShrineChanges))
             {
-                GameObject gathan = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/ShrineChance/ShrineChance.prefab").WaitForCompletion();
-                foreach (var item in gathan.GetComponentInChildren<MeshRenderer>().material.GetTexturePropertyNames())
+                const string shrineContext = "Interactables.ReloadChests.Shrines";
+                GameObject gathan = AddressableLoader.LoadAsset<GameObject>("RoR2/Base/ShrineChance/ShrineChance.prefab", shrineContext);
+                if (gathan)
                 {
-                    gathan.GetComponentInChildren<MeshRenderer>().sharedMaterial.SetTexture(item, Assets.Load<Texture>("@MoistureUpset_na:assets/blank.png"));
+                    foreach (var item in gathan.GetComponentInChildren<MeshRenderer>().material.GetTexturePropertyNames())
+                    {
+                        gathan.GetComponentInChildren<MeshRenderer>().sharedMaterial.SetTexture(item, Assets.Load<Texture>("@MoistureUpset_na:assets/blank.png"));
+                    }
                 }
                 EnemyReplacements.ReplaceMeshRenderer("RoR2/Base/ShrineChance/ShrineChance.prefab", "@MoistureUpset_moisture_lego:assets/arbitraryfolder/lego.mesh", "@MoistureUpset_moisture_lego:assets/arbitraryfolder/lego.png", 0);
 
-                gathan = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/ShrineChance/ShrineChanceSnowy Variant.prefab").WaitForCompletion();
-                gathan.GetComponentInChildren<Renderer>().material = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/ShrineChance/ShrineChance.prefab").WaitForCompletion().GetComponentInChildren<Renderer>().material;
+                var shrineChanceBase = AddressableLoader.LoadAsset<GameObject>("RoR2/Base/ShrineChance/ShrineChance.prefab", shrineContext);
+                gathan = AddressableLoader.LoadAsset<GameObject>("RoR2/Base/ShrineChance/ShrineChanceSnowy Variant.prefab", shrineContext);
+                if (gathan && shrineChanceBase)
+                {
+                    gathan.GetComponentInChildren<Renderer>().material = shrineChanceBase.GetComponentInChildren<Renderer>().material;
+                }
 
-                gathan = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/ShrineChance/ShrineChanceSandy Variant.prefab").WaitForCompletion();
-                gathan.GetComponentInChildren<Renderer>().material = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/ShrineChance/ShrineChance.prefab").WaitForCompletion().GetComponentInChildren<Renderer>().material;
+                gathan = AddressableLoader.LoadAsset<GameObject>("RoR2/Base/ShrineChance/ShrineChanceSandy Variant.prefab", shrineContext);
+                if (gathan && shrineChanceBase)
+                {
+                    gathan.GetComponentInChildren<Renderer>().material = shrineChanceBase.GetComponentInChildren<Renderer>().material;
+                }
 
                 EnemyReplacements.ReplaceMeshRenderer("RoR2/Base/ShrineChance/ShrineChanceSnowy Variant.prefab", "@MoistureUpset_moisture_lego:assets/arbitraryfolder/legoSnow.mesh", "@MoistureUpset_moisture_lego:assets/arbitraryfolder/lego.png", 0);
                 EnemyReplacements.ReplaceMeshFilter("RoR2/Base/ShrineChance/ShrineChanceSnowy Variant.prefab", "@MoistureUpset_na:assets/na1.mesh", 1);
