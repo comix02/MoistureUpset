@@ -191,7 +191,7 @@ namespace MoistureUpset.InteractReplacements
                     foreach (var item in self.GetFieldValue<GameObject[]>("_terminalGameObjects"))
                     {
                         ids.Add(item.GetComponent<NetworkIdentity>().netId);
-                        if (item.GetComponent<PurchaseInteraction>().Networkavailable)
+                        if (item.GetComponent<PurchaseInteraction>().available)
                         {
                             available += 1;
                         }

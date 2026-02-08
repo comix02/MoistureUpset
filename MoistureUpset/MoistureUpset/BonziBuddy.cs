@@ -3030,9 +3030,9 @@ namespace MoistureUpset
             GameObject table = GameObject.Find("HOLDER: Store").transform.Find("LunarShop").Find("LunarTable").gameObject;
             foreach (var item in table.GetComponentsInChildren<PurchaseInteraction>())
             {
-                if (item.Networkavailable)
+                if (item.available)
                 {
-                    item.Networkavailable = false;
+                    item.available = false;
                     item.available = false;
                     item.gameObject.transform.Find("Display").Find("mdlBazaarBabyFlower").Find("PickupDisplay").gameObject.SetActive(false);
                     StartCoroutine(DropletCoroutine(v));
