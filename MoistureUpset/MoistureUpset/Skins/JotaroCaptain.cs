@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
-using UnityEngine.AddressableAssets;
+using MoistureUpset;
 
 namespace MoistureUpset.Skins
 {
@@ -124,18 +124,23 @@ namespace MoistureUpset.Skins
 
         private static void CaptainDisplayFix()
         {
-            var fab = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Captain/CaptainDisplay.prefab").WaitForCompletion();
-
-            fab.AddComponent<Jotaro.JotaroDisplayFix>(); // To fix the models not swapping back on skin change.
+            var fab = AddressableLoader.LoadAsset<GameObject>("RoR2/Base/Captain/CaptainDisplay.prefab", "JotaroCaptain.CaptainDisplayFix");
+            if (fab)
+            {
+                fab.AddComponent<Jotaro.JotaroDisplayFix>(); // To fix the models not swapping back on skin change.
+            }
         }
 
         // Add stuff to the character prefab here
         private static void AddToPrefab()
         {
-            GameObject captainBody = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Captain/CaptainBody.prefab").WaitForCompletion(); // load captain prefab
-            captainBody.AddComponent<Jotaro.AddSubtitleBar>(); // add a script that will load the subtitle bar
-            captainBody.AddComponent<Jotaro.SubtitleController>();
-            captainBody.AddComponent<Jotaro.JotaroHurt>();
+            GameObject captainBody = AddressableLoader.LoadAsset<GameObject>("RoR2/Base/Captain/CaptainBody.prefab", "JotaroCaptain.AddToPrefab"); // load captain prefab
+            if (captainBody)
+            {
+                captainBody.AddComponent<Jotaro.AddSubtitleBar>(); // add a script that will load the subtitle bar
+                captainBody.AddComponent<Jotaro.SubtitleController>();
+                captainBody.AddComponent<Jotaro.JotaroHurt>();
+            }
         }
     }
 }

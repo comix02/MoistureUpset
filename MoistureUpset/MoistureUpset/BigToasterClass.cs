@@ -17,7 +17,6 @@ using AK;
 using System.Collections;
 using MoistureUpset.NetMessages;
 using R2API.Networking.Interfaces;
-using UnityEngine.AddressableAssets;
 using MoistureUpset.Collabs;
 
 namespace MoistureUpset
@@ -192,19 +191,27 @@ namespace MoistureUpset
                 BigToasterClass.Modded_MSX(BigJank.getOptionValue(Settings.ModdedMusicVolume));
                 BigToasterClass.Modded_SFX(BigJank.getOptionValue(Settings.ModdedSFXVolume));
                 brother = 0;
-                var sugondeez = Addressables.LoadAssetAsync<RoR2.InteractableSpawnCard>("RoR2/Base/Chest1/iscChest1.asset").WaitForCompletion();
-                if (sugondeez.prefab.GetComponentInChildren<SkinnedMeshRenderer>().sharedMesh.name != "smallchest")
+                const string context = "BigToasterClass.PreGame";
+                var sugondeez = AddressableLoader.LoadAsset<RoR2.InteractableSpawnCard>("RoR2/Base/Chest1/iscChest1.asset", context);
+                if (sugondeez?.prefab && sugondeez.prefab.GetComponentInChildren<SkinnedMeshRenderer>().sharedMesh.name != "smallchest")
                 {
                     InteractReplacements.Interactables.ReloadChests();
+                }
+                else if (sugondeez && !sugondeez.prefab)
+                {
+                    DebugClass.Log($"[Addressables] Missing prefab on spawn card 'RoR2/Base/Chest1/iscChest1.asset' ({context}).");
                 }
 
                 EnemyReplacements.kindlyKillYourselfRune = true;
                 AkSoundEngine.SetRTPCValue("Dicks", 0);
                 if (BigJank.getOptionValue(Settings.NyanCat))
                 {
-                    var fab = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Beetle/BeetleWard.prefab").WaitForCompletion();
-                    fab.GetComponentsInChildren<SkinnedMeshRenderer>()[0].sharedMesh = Assets.Load<Mesh>("@MoistureUpset_beetlequeen:assets/bosses/Poptart.mesh");
-                    fab.GetComponentsInChildren<SkinnedMeshRenderer>()[0].material = Assets.Load<Material>("@MoistureUpset_beetlequeen:assets/bosses/nyancat.mat");
+                    var fab = AddressableLoader.LoadAsset<GameObject>("RoR2/Base/Beetle/BeetleWard.prefab", context);
+                    if (fab)
+                    {
+                        fab.GetComponentsInChildren<SkinnedMeshRenderer>()[0].sharedMesh = Assets.Load<Mesh>("@MoistureUpset_beetlequeen:assets/bosses/Poptart.mesh");
+                        fab.GetComponentsInChildren<SkinnedMeshRenderer>()[0].material = Assets.Load<Material>("@MoistureUpset_beetlequeen:assets/bosses/nyancat.mat");
+                    }
                 }
                 if (BigJank.getOptionValue(Settings.TacoBell))
                     EnemyReplacements.ReplaceMeshRenderer(EntityStates.Bell.BellWeapon.ChargeTrioBomb.preppedBombPrefab, "@MoistureUpset_tacobell:assets/toco.mesh", "@MoistureUpset_tacobell:assets/toco.png");
@@ -718,7 +725,11 @@ namespace MoistureUpset
                                         InteractReplacements.Interactables.particles = Assets.Load<GameObject>("@MoistureUpset_moisture_chests:assets/arbitraryfolder/particles.prefab");
                                     }
                                     EnemyReplacements.ReplaceModel(fab, "@MoistureUpset_moisture_chests:assets/arbitraryfolder/goldchest.mesh", "@MoistureUpset_moisture_chests:assets/arbitraryfolder/goldchest.png");
-                                    fab.GetComponentInChildren<SkinnedMeshRenderer>().material.shader = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Chest2/Chest2.prefab").WaitForCompletion().GetComponentInChildren<SkinnedMeshRenderer>().material.shader;
+                                    var chestTwo = AddressableLoader.LoadAsset<GameObject>("RoR2/Base/Chest2/Chest2.prefab", "BigToasterClass.ObjectiveTracker");
+                                    if (chestTwo)
+                                    {
+                                        fab.GetComponentInChildren<SkinnedMeshRenderer>().material.shader = chestTwo.GetComponentInChildren<SkinnedMeshRenderer>().material.shader;
+                                    }
                                     fab.GetComponentInChildren<SkinnedMeshRenderer>().material.mainTexture.filterMode = FilterMode.Point;
                                     fab.GetComponentInChildren<ParticleSystem>().maxParticles = 0;
                                     fab.GetComponentInChildren<SfxLocator>().openSound = "GoldChest";
@@ -832,21 +843,24 @@ namespace MoistureUpset
                     AkSoundEngine.PostEvent("SomebodyStop", self.outer.gameObject);
                 };
                 EnemyReplacements.LoadResource("shreklet");
-                foreach (var item in Addressables.LoadAssetAsync<GameObject>("RoR2/Base/SurvivorPod/SurvivorPod.prefab").WaitForCompletion().GetComponentsInChildren<ChildLocator>())
+                var survivorPod = AddressableLoader.LoadAsset<GameObject>("RoR2/Base/SurvivorPod/SurvivorPod.prefab", "BigToasterClass.Somebody");
+                if (survivorPod)
                 {
-                    item.FindChild("ReleaseExhaustFX").gameObject.GetComponentsInChildren<MeshFilter>()[1].sharedMesh = Assets.Load<Mesh>("@MoistureUpset_shreklet:assets/shrekletdoorphysics.mesh");
-                    item.FindChild("ReleaseExhaustFX").gameObject.GetComponentsInChildren<MeshRenderer>()[1].sharedMaterial.mainTexture = Assets.Load<Texture>("@MoistureUpset_shreklet:assets/shreklet.png");
+                    foreach (var item in survivorPod.GetComponentsInChildren<ChildLocator>())
+                    {
+                        item.FindChild("ReleaseExhaustFX").gameObject.GetComponentsInChildren<MeshFilter>()[1].sharedMesh = Assets.Load<Mesh>("@MoistureUpset_shreklet:assets/shrekletdoorphysics.mesh");
+                        item.FindChild("ReleaseExhaustFX").gameObject.GetComponentsInChildren<MeshRenderer>()[1].sharedMaterial.mainTexture = Assets.Load<Texture>("@MoistureUpset_shreklet:assets/shreklet.png");
+                    }
+                    EnemyReplacements.ReplaceMeshFilter("RoR2/Base/SurvivorPod/SurvivorPod.prefab", "@MoistureUpset_shreklet:assets/shreklet.mesh", "@MoistureUpset_shreklet:assets/shreklet.png", 1);
+                    EnemyReplacements.ReplaceMeshFilter("RoR2/Base/SurvivorPod/SurvivorPod.prefab", "@MoistureUpset_shreklet:assets/shrekletdoor.mesh", "@MoistureUpset_shreklet:assets/shreklet.png", 0);
+                    var renderers = survivorPod.GetComponentsInChildren<Renderer>();
+                    renderers[1].sharedMaterials[0].SetTexture("_GreenChannelTex", RandomTwitch.blank);
+                    renderers[1].sharedMaterials[0].SetTexture("_BlueChannelTex", RandomTwitch.blank);
+                    renderers[1].sharedMaterials[0].SetTexture("_EmTex", RandomTwitch.blank);
+                    renderers[0].sharedMaterials[0].SetTexture("_GreenChannelTex", RandomTwitch.blank);
+                    renderers[0].sharedMaterials[0].SetTexture("_BlueChannelTex", RandomTwitch.blank);
+                    renderers[0].sharedMaterials[0].SetTexture("_EmTex", RandomTwitch.blank);
                 }
-                EnemyReplacements.ReplaceMeshFilter("RoR2/Base/SurvivorPod/SurvivorPod.prefab", "@MoistureUpset_shreklet:assets/shreklet.mesh", "@MoistureUpset_shreklet:assets/shreklet.png", 1);
-                EnemyReplacements.ReplaceMeshFilter("RoR2/Base/SurvivorPod/SurvivorPod.prefab", "@MoistureUpset_shreklet:assets/shrekletdoor.mesh", "@MoistureUpset_shreklet:assets/shreklet.png", 0);
-                var fab = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/SurvivorPod/SurvivorPod.prefab").WaitForCompletion();
-                var renderers = fab.GetComponentsInChildren<Renderer>();
-                renderers[1].sharedMaterials[0].SetTexture("_GreenChannelTex", RandomTwitch.blank);
-                renderers[1].sharedMaterials[0].SetTexture("_BlueChannelTex", RandomTwitch.blank);
-                renderers[1].sharedMaterials[0].SetTexture("_EmTex", RandomTwitch.blank);
-                renderers[0].sharedMaterials[0].SetTexture("_GreenChannelTex", RandomTwitch.blank);
-                renderers[0].sharedMaterials[0].SetTexture("_BlueChannelTex", RandomTwitch.blank);
-                renderers[0].sharedMaterials[0].SetTexture("_EmTex", RandomTwitch.blank);
             }
         }
         public static void BossMusic()

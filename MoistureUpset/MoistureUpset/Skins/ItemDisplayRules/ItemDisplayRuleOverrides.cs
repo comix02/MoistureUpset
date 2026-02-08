@@ -6,7 +6,7 @@ using System.Text;
 using RoR2;
 using SimpleJSON;
 using UnityEngine;
-using UnityEngine.AddressableAssets;
+using MoistureUpset;
 
 namespace MoistureUpset.Skins.ItemDisplayRules
 {
@@ -49,7 +49,12 @@ namespace MoistureUpset.Skins.ItemDisplayRules
                         continue;
 
                     ruleGroup.rules[j].childName = ruleOverride.childName;
-                    ruleGroup.rules[j].followerPrefab = Addressables.LoadAssetAsync<GameObject>(ruleOverride.prefabPath).WaitForCompletion();
+                    var followerPrefab = AddressableLoader.LoadAsset<GameObject>(ruleOverride.prefabPath, $"ItemDisplayRuleOverrides.GenerateDisplayRuleOverride:{bodyName}");
+                    if (!followerPrefab)
+                    {
+                        continue;
+                    }
+                    ruleGroup.rules[j].followerPrefab = followerPrefab;
                     ruleGroup.rules[j].localPos = ruleOverride.position;
                     ruleGroup.rules[j].localAngles = ruleOverride.rotation;
                     ruleGroup.rules[j].localScale = ruleOverride.scale;
