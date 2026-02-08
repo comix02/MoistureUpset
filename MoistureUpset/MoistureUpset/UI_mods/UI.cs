@@ -16,6 +16,8 @@ namespace MoistureUpset
 {
     public static class UImods
     {
+        private sealed class UIReplaceMarker : MonoBehaviour { }
+
         public static void ReplaceUIObject(string objectname, string path)
         {
             try
@@ -23,13 +25,33 @@ namespace MoistureUpset
                 GameObject logo = GameObject.Find(objectname);
                 if (logo)
                 {
+                    if (logo.GetComponent<UIReplaceMarker>())
+                    {
+                        return;
+                    }
+
+                    var image = logo.GetComponent<UnityEngine.UI.Image>();
+                    if (!image)
+                    {
+                        return;
+                    }
+
                     byte[] bytes = ByteReader.readbytes(path);
-                    Texture2D tex = new Texture2D(256, 256);
+                    if (bytes == null || bytes.Length == 0)
+                    {
+                        return;
+                    }
+
+                    var tex = new Texture2D(2, 2, TextureFormat.RGBA32, false);
                     tex.filterMode = FilterMode.Trilinear;
-                    tex = logo.GetComponent<UnityEngine.UI.Image>().sprite.texture;
-                    tex.LoadImage(bytes);
-                    logo.GetComponent<UnityEngine.UI.Image>().sprite = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(.5f, .5f), 100);
-                    logo.name = $"{logo.name}REPLACED";
+                    if (!tex.LoadImage(bytes))
+                    {
+                        UnityEngine.Object.Destroy(tex);
+                        return;
+                    }
+
+                    image.sprite = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(.5f, .5f), 100);
+                    logo.AddComponent<UIReplaceMarker>();
                 }
             }
             catch (Exception)
