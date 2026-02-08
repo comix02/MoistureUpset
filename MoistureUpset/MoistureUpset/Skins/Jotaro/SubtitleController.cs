@@ -18,6 +18,7 @@ namespace MoistureUpset.Skins.Jotaro
     class SubtitleController : MonoBehaviour
     {
         private TextMeshPro textMeshPro;
+        private Coroutine clearTextRoutine;
 
         private float timer = 0f;
 
@@ -30,9 +31,13 @@ namespace MoistureUpset.Skins.Jotaro
 
             timer = duration;
 
-            StopCoroutine(ClearText());
+            if (clearTextRoutine != null)
+            {
+                StopCoroutine(clearTextRoutine);
+                clearTextRoutine = null;
+            }
 
-            StartCoroutine("ClearText");
+            clearTextRoutine = StartCoroutine(ClearText());
         }
 
         IEnumerator ClearText()
