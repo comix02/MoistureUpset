@@ -182,9 +182,9 @@ namespace MoistureUpset.InteractReplacements
                 Assets.AddBundle("InteractReplacements.SodaBarrel.sodaspritz");
                 On.RoR2.BarrelInteraction.OnInteractionBegin += SpraySoda;
                 On.RoR2.BarrelInteraction.OnDeserialize += SpraySoda;
-                On.RoR2.MultiShopController.OnPurchase += (orig, self, interactor, interaction) =>
+                On.RoR2.MultiShopController.OnPurchase += (orig, self, context, results) =>
                 {
-                    orig(self, interactor, interaction);
+                    orig(self, context, results);
                     List<NetworkInstanceId> ids = new List<NetworkInstanceId>();
                     ids.Add(self.GetComponent<NetworkIdentity>().netId);
                     int available = 0;
