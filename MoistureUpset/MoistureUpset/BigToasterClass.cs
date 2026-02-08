@@ -114,65 +114,10 @@ namespace MoistureUpset
         public static void PlayerDeath()
         {
             if (BigJank.getOptionValue(Settings.PlayerDeathChat))
+                On.RoR2.GlobalEventManager.OnPlayerCharacterDeath += (orig, report) =>
             {
-                RegisterPlayerDeathHook();
-            }
-        }
-
-        private static void RegisterPlayerDeathHook()
-        {
-            if (_playerDeathHooked)
-            {
-                return;
-            }
-
-            var eventInfo = typeof(On.RoR2.GlobalEventManager).GetEvent("OnPlayerCharacterDeath");
-            if (eventInfo == null)
-            {
-                return;
-            }
-
-            var handlerType = eventInfo.EventHandlerType;
-            var invokeMethod = handlerType?.GetMethod("Invoke");
-            var parameterCount = invokeMethod?.GetParameters().Length ?? 0;
-            Delegate handler = null;
-
-            if (parameterCount == 2)
-            {
-                handler = Delegate.CreateDelegate(handlerType, typeof(BigToasterClass).GetMethod(nameof(OnPlayerCharacterDeathHook),
-                    System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static));
-            }
-            else if (parameterCount == 3)
-            {
-                handler = Delegate.CreateDelegate(handlerType, typeof(BigToasterClass).GetMethod(nameof(OnPlayerCharacterDeathHookWithSelf),
-                    System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static));
-            }
-
-            if (handler != null)
-            {
-                eventInfo.AddEventHandler(null, handler);
-                _playerDeathHooked = true;
-            }
-        }
-
-        private static void OnPlayerCharacterDeathHook(On.RoR2.GlobalEventManager.orig_OnPlayerCharacterDeath orig, DamageReport report)
-        {
-            orig(report);
-            HandlePlayerDeath(report);
-        }
-
-        private static void OnPlayerCharacterDeathHookWithSelf(On.RoR2.GlobalEventManager.orig_OnPlayerCharacterDeath orig, GlobalEventManager self, DamageReport report)
-        {
-            orig(self, report);
-            HandlePlayerDeath(report);
-        }
-
-        private static void HandlePlayerDeath(DamageReport report)
-        {
-            try
-            {
-                NetworkUser user = report.victimMaster?.playerCharacterMasterController?.networkUser;
-                if (!user)
+                orig(report);
+                try
                 {
                     return;
                 }
