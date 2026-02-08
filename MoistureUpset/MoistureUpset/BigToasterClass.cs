@@ -109,68 +109,111 @@ namespace MoistureUpset
             //    }
             //}
         }
+        private static bool _playerDeathHooked;
+
         public static void PlayerDeath()
         {
-            if (BigJank.getOptionValue(Settings.PlayerDeathChat))
-                On.RoR2.GlobalEventManager.OnPlayerCharacterDeath += (orig, self, report) =>
+            if (!BigJank.getOptionValue(Settings.PlayerDeathChat))
             {
-                orig(self, report);
-                try
-                {
-                    NetworkUser user = report.victimMaster?.playerCharacterMasterController?.networkUser;
-                    if (!user)
-                    {
-                        return;
-                    }
-                    List<string> quotes = new List<string> { "I wasn't even trying", "If ya'll would help me I wouldn't have died...", "Nice one hit protection game", "HOW DID I DIE?????", "The first game was better", "Whatever", "Yeah alright, thats cool" };
-                    if (BigJank.getOptionValue(Settings.NSFW))
-                    {
-                        quotes.Add("I fucking hate this game");
-                    }
-                    if (report.attackerMaster.name.ToUpper().Contains("MAGMAWORM"))
-                    {
-                        for (int i = 0; i < 3; i++)
-                            quotes.Add("The magma worm is such bullshit");
-                    }
-                    else if (report.attackerMaster.name.ToUpper().Contains("ELECTRICWORM"))
-                    {
-                        for (int i = 0; i < 3; i++)
-                            quotes.Add("Why does it get lightning? It's already strong enough");
-                    }
-                    else if (report.attackerMaster.name.ToUpper().Contains("BROTHERHURT"))
-                    {
-                        for (int i = 0; i < 3; i++)
-                            quotes.Add("This final phase sucks so much");
-                    }
-                    else if (report.attackerMaster.name.ToUpper().Contains("WISPMASTER"))
-                    {
-                        for (int i = 0; i < 3; i++)
-                            quotes.Add("Unfucking dodgeable");
-                    }
-                    else if (report.attackerMaster.name.ToUpper().Contains("VAGRANT"))
-                    {
-                        for (int i = 0; i < 3; i++)
-                            quotes.Add("How are you supposed to dodge that????");
-                    }
-                    else if (report.attackerMaster.name.ToUpper().Contains("LEMURIANBRUISERMASTER"))
-                    {
-                        for (int i = 0; i < 3; i++)
-                            quotes.Add("The fire breath is so annoying");
-                    }
-                    //else if (UnityEngine.Random.Range(0, 1000) == 5)//maybe have a dummy super rare easter egg?
-                    //{
-                    //    quotes.Add("");
-                    //}
-                    Chat.SendBroadcastChat(new Chat.UserChatMessage
-                    {
-                        sender = user.gameObject,
-                        text = quotes[UnityEngine.Random.Range(0, quotes.Count - 1)],
-                    });
-                }
-                catch (Exception)
-                {
-                }
+                return;
+            }
+
+            RegisterPlayerDeathHook();
+        }
+
+        private static void RegisterPlayerDeathHook()
+        {
+            if (_playerDeathHooked)
+            {
+                return;
+            }
+
+            On.RoR2.GlobalEventManager.OnPlayerCharacterDeath += OnPlayerCharacterDeathHook;
+            _playerDeathHooked = true;
+        }
+
+        private static void OnPlayerCharacterDeathHook(On.RoR2.GlobalEventManager.orig_OnPlayerCharacterDeath orig, GlobalEventManager self, DamageReport report)
+        {
+            orig(self, report);
+            HandlePlayerDeath(report);
+        }
+
+        private static void HandlePlayerDeath(DamageReport report)
+        {
+            NetworkUser user = report.victimMaster?.playerCharacterMasterController?.networkUser;
+            if (!user)
+            {
+                return;
+            }
+
+            List<string> quotes = new List<string>
+            {
+                "I wasn't even trying",
+                "If ya'll would help me I wouldn't have died...",
+                "Nice one hit protection game",
+                "HOW DID I DIE?????",
+                "The first game was better",
+                "Whatever",
+                "Yeah alright, thats cool"
             };
+
+            if (BigJank.getOptionValue(Settings.NSFW))
+            {
+                quotes.Add("I fucking hate this game");
+            }
+
+            if (report.attackerMaster.name.ToUpper().Contains("MAGMAWORM"))
+            {
+                for (int i = 0; i < 3; i++)
+                {
+                    quotes.Add("The magma worm is such bullshit");
+                }
+            }
+            else if (report.attackerMaster.name.ToUpper().Contains("ELECTRICWORM"))
+            {
+                for (int i = 0; i < 3; i++)
+                {
+                    quotes.Add("Why does it get lightning? It's already strong enough");
+                }
+            }
+            else if (report.attackerMaster.name.ToUpper().Contains("BROTHERHURT"))
+            {
+                for (int i = 0; i < 3; i++)
+                {
+                    quotes.Add("This final phase sucks so much");
+                }
+            }
+            else if (report.attackerMaster.name.ToUpper().Contains("WISPMASTER"))
+            {
+                for (int i = 0; i < 3; i++)
+                {
+                    quotes.Add("Unfucking dodgeable");
+                }
+            }
+            else if (report.attackerMaster.name.ToUpper().Contains("VAGRANT"))
+            {
+                for (int i = 0; i < 3; i++)
+                {
+                    quotes.Add("How are you supposed to dodge that????");
+                }
+            }
+            else if (report.attackerMaster.name.ToUpper().Contains("LEMURIANBRUISERMASTER"))
+            {
+                for (int i = 0; i < 3; i++)
+                {
+                    quotes.Add("The fire breath is so annoying");
+                }
+            }
+
+            //else if (UnityEngine.Random.Range(0, 1000) == 5)//maybe have a dummy super rare easter egg?
+            //{
+            //    quotes.Add("");
+            //}
+            Chat.SendBroadcastChat(new Chat.UserChatMessage
+            {
+                sender = user.gameObject,
+                text = quotes[UnityEngine.Random.Range(0, quotes.Count - 1)],
+            });
         }
         public static void PreGame()
         {
