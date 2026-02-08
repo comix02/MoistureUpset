@@ -49,10 +49,19 @@ namespace MoistureUpset
                 orig(self);
                 try
                 {
+                    var outerObject = self?.outer?.gameObject;
+                    var body = outerObject ? outerObject.GetComponent<CharacterBody>() : null;
+
+                    // Failsafe for rare cases where custom material/shader setups prevent normal corpse cleanup.
+                    if (NetworkServer.active && outerObject && body && !body.isPlayerControlled)
+                    {
+                        UnityEngine.Object.Destroy(outerObject, 12f);
+                    }
+
                     if (BigJank.getOptionValue(Settings.PlayerDeathSound))
-                        if (self.outer.gameObject.GetComponentInChildren<RoR2.PositionIndicator>() && self.outer.gameObject.GetComponentInChildren<RoR2.PositionIndicator>().name == "PlayerPositionIndicator(Clone)")
+                        if (outerObject && outerObject.GetComponentInChildren<RoR2.PositionIndicator>() && outerObject.GetComponentInChildren<RoR2.PositionIndicator>().name == "PlayerPositionIndicator(Clone)")
                         {
-                            AkSoundEngine.PostEvent("PlayerDeath", self.outer.gameObject);
+                            AkSoundEngine.PostEvent("PlayerDeath", outerObject);
                         }
                 }
                 catch (Exception)
