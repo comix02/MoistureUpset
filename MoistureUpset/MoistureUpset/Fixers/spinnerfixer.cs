@@ -17,7 +17,7 @@ namespace MoistureUpset.Fixers
         }
         void Update()
         {
-            if (!GetComponentInChildren<RoR2.MultiShopController>().Networkavailable)
+            if (!GetComponentInChildren<RoR2.MultiShopController>().available)
             {
                 transform.Rotate(new Vector3(0, 1000 * Time.deltaTime, 0));
             }
